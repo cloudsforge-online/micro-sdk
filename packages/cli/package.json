@@ -1,0 +1,50 @@
+{
+  "name": "@cloudsforge/cli",
+  "version": "0.1.0",
+  "description": "The CloudsForge public API from a shell: authenticate, list and inspect, with --json so it composes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/run.ts",
+  "types": "src/run.ts",
+  "bin": {
+    "cloudsforge": "./dist/main.js"
+  },
+  "exports": {
+    ".": "./src/run.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/run.js",
+    "types": "./dist/run.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/run.d.ts",
+        "default": "./dist/run.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "cloudsforge",
+    "cli",
+    "api"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/*.test.ts",
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/main.js",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@cloudsforge/sdk": "workspace:^"
+  }
+}

@@ -1,0 +1,154 @@
+name: CI
+
+# A library workspace, not a service: it serves no /livez, /readyz or /metrics, owns no database
+# and ships no container, so micro-org/service-ci.yml — whose rules assert exactly those things —
+# does not fit it, and forcing it through would mean weakening the rules for everyone else. This is
+# the same minimal bespoke check micro-contracts and micro-ui run, for the same reason.
+#
+# Two jobs here exist nowhere else in the estate, because nothing else in the estate is public:
+#
+#   * `drift` — packages/sdk/src/chain.ts DUPLICATES constants from the private contracts package,
+#     because a public package cannot depend on a private repository. Duplicating a value the
+#     estate exact-pins is only defensible with a check; this is the check. It cannot be a test:
+#     `pnpm test` has to pass for somebody holding only the published tarball, and they have no
+#     sibling checkout — so it would have to skip, and a skipped test is an unmeasured one.
+#
+#   * `pack` — rule 5 of this repository's brief: `pnpm pack` must produce a tarball a stranger
+#     could use. That is not provable by typecheck. The job installs the tarball into an empty
+#     project OUTSIDE the workspace, with no lockfile and no workspace links, and imports it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # A single checkout at the workspace root, so the action reads the packageManager field
+      # (pnpm@11.9.0) itself — no version to drift here.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  drift:
+    name: The duplicated chain constants still match their source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+
+      # Source only. The checker reads the file as TEXT and never imports it — importing would mean
+      # resolving a private workspace from a public repository, which is the dependency this
+      # package exists to not have.
+      - name: Fetch the contract source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/micro-contracts
+          ref: main
+          path: .contracts
+          # micro-contracts is private and the job token is scoped to THIS repository, so it cannot
+          # see another one. Same failure, and same fix, as the tenth defect recorded in
+          # micro-org/.github/workflows/contract-compat.yml.
+          token: ${{ secrets.ESTATE_READ_TOKEN || github.token }}
+          sparse-checkout: |
+            packages/chain/src
+
+      - run: pnpm drift --contracts .contracts
+
+  pack:
+    name: A stranger can install the tarball
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Pack
+        run: pnpm --filter @cloudsforge/sdk pack --pack-destination "$RUNNER_TEMP"
+
+      # Deliberately outside the checkout: inside it, pnpm would find the workspace and resolve
+      # @cloudsforge/sdk to the local package, which proves nothing. `--ignore-workspace` is belt
+      # and braces on top of the location.
+      - name: Install it into an empty project and use it
+        run: |
+          set -euo pipefail
+          consumer="$RUNNER_TEMP/consumer"
+          mkdir -p "$consumer"
+          cd "$consumer"
+          printf '{"name":"stranger","version":"1.0.0","type":"module","private":true}\n' > package.json
+          pnpm add --ignore-workspace "$RUNNER_TEMP"/cloudsforge-sdk-*.tgz
+
+          cat > use.mjs <<'JS'
+          import { CloudsForge, apiKey, formatAmount, decimalsFor, ROUTES } from '@cloudsforge/sdk'
+          import assert from 'node:assert/strict'
+
+          // An amount past 2^53, through the whole decode path, from the published artefact.
+          const cf = new CloudsForge({
+            baseUrl: 'https://api.example.test',
+            credential: apiKey('k'),
+            fetch: async () => new Response(JSON.stringify({
+              subject: 'user:1', asOf: 'now', degraded: [], nextCursor: null, wallets: [],
+              balances: [{ assetCode: 'EMBER', purpose: 'available', amount: '12345678901234567890', valuation: null }],
+            }), { status: 200, headers: { 'content-type': 'application/json' } }),
+          })
+          const portfolio = await cf.portfolio.get()
+          const balance = portfolio.balances[0]
+          assert.equal(typeof balance.amount, 'bigint')
+          assert.equal(formatAmount(balance.amount, decimalsFor(balance.assetCode)), '12.34567890123456789')
+          assert.equal(ROUTES['market.listings'].path, '/v1/listings')
+          console.log('ok: the published tarball installs and works with no access to anything private')
+          JS
+          node use.mjs
+
+      - name: The tarball carries no sources and no dependencies
+        run: |
+          set -euo pipefail
+          tar -tzf "$RUNNER_TEMP"/cloudsforge-sdk-*.tgz | sort > /tmp/contents
+          if grep -qE '(^package/src/|\.test\.)' /tmp/contents; then
+            echo "::error::the tarball contains sources or tests"
+            cat /tmp/contents
+            exit 1
+          fi
+          echo "ok: dist, README and LICENSE only"
+
+  compat:
+    name: Public exports evolve additively
+    # THE FIRST PUSH TO A NEW REPOSITORY CANNOT RUN THIS, and skipping it deliberately beats a red
+    # run that means nothing. `github.event.before` is forty zeroes when a branch is created, the
+    # checker resolves the base ref with `git ls-tree` (micro-org/tools/compat.ts:492), and
+    # `ls-tree` against a nonexistent object exits non-zero — so the job would fail on the one push
+    # where there is provably nothing to compare against. Every subsequent push, and every pull
+    # request, runs it.
+    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+    uses: cloudsforge-online/micro-org/.github/workflows/contract-compat.yml@main
+    secrets:
+      # The checker lives in micro-org, which is private, so fetching it needs a contents:read
+      # token — the job token is scoped to THIS repository and cannot see another one.
+      estate_token: ${{ secrets.ESTATE_READ_TOKEN }}
+    permissions:
+      contents: read
+
+  hygiene:
+    uses: cloudsforge-online/micro-org/.github/workflows/secret-hygiene.yml@main
+    with:
+      require-dockerignore: false
+    permissions:
+      contents: read
