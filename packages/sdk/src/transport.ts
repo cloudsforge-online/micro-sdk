@@ -380,9 +380,25 @@ function retryAfterMsOf(header: string | null): number | undefined {
   return Math.max(0, at - Date.now())
 }
 
+/**
+ * The backoff between attempts. **The timer is deliberately NOT unref'd.**
+ *
+ * `runtime/packages/http` unrefs its equivalent, and that is right there: it runs inside a server
+ * process that always has an open listener keeping the loop alive, so an unref'd timer costs
+ * nothing and stops a lingering retry holding a shutdown open.
+ *
+ * Here the opposite is true. This library runs inside somebody else's process — a CLI invocation, a
+ * serverless handler, a script — and an unref'd timer is not a handle the runtime waits for. With
+ * nothing else pending, the loop drains during the backoff, the retry never fires, and the promise
+ * the caller is awaiting simply never settles. Node reports it as "Promise resolution is still
+ * pending but the event loop has already resolved"; a user reports it as "it exits and prints
+ * nothing, but only sometimes". Caught by CI on a loaded runner, where the timing that hides it
+ * locally does not hold.
+ *
+ * A retry in flight is work the process must stay alive for. `deadlineMs` is what bounds it.
+ */
 function defaultSleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    const timer = setTimeout(resolve, ms)
-    timer.unref?.()
+    setTimeout(resolve, ms)
   })
 }

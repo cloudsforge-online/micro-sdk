@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
+import path from 'node:path'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { ApiError, TimeoutError, TransportError, UsageError } from './errors.ts'
 import { apiKey, anonymous } from './credentials.ts'
 import { ROUTES } from './routes.ts'
 import { Transport, type TransportOptions } from './transport.ts'
+
+const here = path.dirname(fileURLToPath(import.meta.url))
 
 interface Recorded {
   readonly url: string
@@ -391,4 +396,37 @@ test('an idempotency key on a GET is a usage error, not a silently ignored heade
     UsageError,
   )
   assert.equal(calls.length, 0)
+})
+
+/* ------------------------------------------------------------------ the backoff timer */
+
+test('a retry still fires when nothing else is keeping the event loop alive', async () => {
+  // REGRESSION. The backoff timer was `unref()`d, copied from the estate's internal client where
+  // it is correct — that one runs inside a server process whose listener always holds the loop
+  // open. Here the library runs inside somebody else's process, and an unref'd timer is not a
+  // handle the runtime waits for: with nothing else pending the loop drains during the backoff,
+  // the retry never fires, and the awaited promise never settles.
+  //
+  // A child process is the only honest way to assert it. In-process, the test runner's own handles
+  // keep the loop alive and the bug is invisible — which is exactly why it reached CI.
+  const script = `
+    import { Transport, ROUTES } from ${JSON.stringify(path.join(here, 'index.ts'))}
+    let attempts = 0
+    const fetch = async () => {
+      attempts += 1
+      return attempts === 1
+        ? new Response('{"error":{"code":"x","message":"y"}}', { status: 503, headers: { 'content-type': 'application/json' } })
+        : new Response('{"ok":true}', { status: 200, headers: { 'content-type': 'application/json' } })
+    }
+    // No injected sleep: the real backoff timer, which is the thing under test.
+    const t = new Transport({ baseUrl: 'https://api.example.test', fetch, retries: 2 })
+    const result = await t.call('pricing.rates', ROUTES['pricing.rates'])
+    process.stdout.write(JSON.stringify({ attempts, result }))
+  `
+  const child = spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '--eval', script], {
+    encoding: 'utf8',
+    cwd: path.resolve(here, '..'),
+  })
+  assert.equal(child.status, 0, `child failed: ${child.stderr}`)
+  assert.deepEqual(JSON.parse(child.stdout) as unknown, { attempts: 2, result: { ok: true } })
 })
