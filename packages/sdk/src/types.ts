@@ -385,7 +385,7 @@ export interface ListingRisk {
 
 /* ------------------------------------------------------------------ mint */
 
-/** `mint/src/server.ts:617`. */
+/** `mint/src/server.ts:641`. */
 export interface Token {
   readonly id: string
   readonly ownerSubject: string
@@ -433,7 +433,7 @@ export interface MintCatalogue {
   }[]
 }
 
-/** `mint/src/server.ts:532`. The deploy leaves the request here; poll `statusUrl`. */
+/** `mint/src/server.ts:556`. The deploy leaves the request here; poll `statusUrl`. */
 export interface DeployAccepted {
   readonly accepted: true
   readonly tokenId: string

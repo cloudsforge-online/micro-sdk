@@ -6,8 +6,10 @@
  * `packages/sdk/src/routes.ts` is the only place in the estate that knows the public surface, and
  * every entry in it carries a `verifiedAt` citation into the line of the service that registers
  * the route. It was written by reading the services one route at a time, because this estate had
- * already shipped a run of clients built against a surface somebody imagined — enumerated in
- * `docs/ecosystem/18-build-status.md` §3.3i, whose heading carries the running count.
+ * already shipped a run of clients built against a surface somebody imagined — recorded in
+ * `docs/ecosystem/18-build-status.md` §3.3i and §3.3m. Cite the SECTION, never a count: that
+ * ledger stopped carrying a running total precisely because four files in this repository said
+ * "five" while it said "seven", and nothing could tell.
  *
  * Two things were missing that both describe that same surface:
  *

@@ -387,7 +387,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'none',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:340',
+    verifiedAt: 'mint/src/server.ts:354',
   },
   'mint.createToken': {
     method: 'POST',
@@ -395,7 +395,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:359',
+    verifiedAt: 'mint/src/server.ts:373',
   },
   'mint.tokens': {
     method: 'GET',
@@ -403,7 +403,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:417',
+    verifiedAt: 'mint/src/server.ts:441',
   },
   'mint.token': {
     method: 'GET',
@@ -411,7 +411,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:430',
+    verifiedAt: 'mint/src/server.ts:454',
   },
   'mint.pay': {
     method: 'POST',
@@ -419,7 +419,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:454',
+    verifiedAt: 'mint/src/server.ts:478',
   },
   'mint.deploy': {
     method: 'POST',
@@ -427,7 +427,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:491',
+    verifiedAt: 'mint/src/server.ts:515',
   },
   'mint.putPage': {
     method: 'PUT',
@@ -435,7 +435,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'token',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:546',
+    verifiedAt: 'mint/src/server.ts:570',
   },
   'mint.page': {
     method: 'GET',
@@ -443,7 +443,7 @@ export const ROUTES = {
     service: 'mint',
     auth: 'none',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:572',
+    verifiedAt: 'mint/src/server.ts:596',
   },
 
   /* ------------------------------------------------------------------ foresight */

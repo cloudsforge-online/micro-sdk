@@ -655,7 +655,7 @@ class MintResource extends Resource {
    * Public. The project page.
    *
    * Supply and authorities on it come from the INDEXER, not from the order record — the difference
-   * between a fact and a claim (`mint/src/server.ts:565`).
+   * between a fact and a claim (`mint/src/server.ts:589`).
    */
   async page(id: string, options: Options = {}): Promise<Raw> {
     return this.call('mint.page', { ...options, params: { id } })

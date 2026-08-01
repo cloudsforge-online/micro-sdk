@@ -1265,7 +1265,7 @@
       "get": {
         "operationId": "mint.catalogue",
         "summary": "GET /v1/catalogue",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:340`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:354`.",
         "tags": [
           "mint"
         ],
@@ -1284,7 +1284,7 @@
       "post": {
         "operationId": "mint.createToken",
         "summary": "POST /v1/tokens",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:359`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:373`.",
         "tags": [
           "mint"
         ],
@@ -1308,7 +1308,7 @@
       "get": {
         "operationId": "mint.tokens",
         "summary": "GET /v1/tokens",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:417`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:441`.",
         "tags": [
           "mint"
         ],
@@ -1334,7 +1334,7 @@
       "get": {
         "operationId": "mint.token",
         "summary": "GET /v1/tokens/:id",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:430`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:454`.",
         "tags": [
           "mint"
         ],
@@ -1370,7 +1370,7 @@
       "post": {
         "operationId": "mint.pay",
         "summary": "POST /v1/tokens/:id/pay",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:454`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:478`.",
         "tags": [
           "mint"
         ],
@@ -1406,7 +1406,7 @@
       "post": {
         "operationId": "mint.deploy",
         "summary": "POST /v1/tokens/:id/deploy",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:491`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:515`.",
         "tags": [
           "mint"
         ],
@@ -1442,7 +1442,7 @@
       "put": {
         "operationId": "mint.putPage",
         "summary": "PUT /v1/tokens/:id/page",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:546`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:570`.",
         "tags": [
           "mint"
         ],
@@ -1476,7 +1476,7 @@
       "get": {
         "operationId": "mint.page",
         "summary": "GET /v1/tokens/:id/page",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:572`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:596`.",
         "tags": [
           "mint"
         ],
