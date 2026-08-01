@@ -15,25 +15,125 @@
  * other than reality — a brand manifest whose checksums were taken before the files were rewritten,
  * and a "Reproduce:" line naming a validator that had never existed. A generated artefact that
  * nobody checks is the same defect with better provenance.
+ *
+ * ## Why the gateway map is not read here
+ *
+ * It lives in micro-deploy, which is private and which a stranger holding the published tarball
+ * does not have. A test that read it could only skip, and `tools/drift.ts` already refuses that
+ * trade in its header: an invariant needing a sibling checkout belongs in a CI job. Reading it
+ * anyway is what made run 30691403652 red, on correct code.
+ *
+ * So the split is the same one drift.ts draws. `.github/workflows/ci.yml`'s `gateway` job checks
+ * micro-deploy out and grades the REAL map — and then deletes a router from it and demands the
+ * check go red, so the job cannot pass by reading nothing. What is left here is the half that runs
+ * everywhere, plus proof that the checker the job runs is capable of failing at all.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ROUTES } from './routes.ts'
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url))
 
-test('the generator reports both artefacts in sync', () => {
-  // The single source of truth for "is this stale" — the same command CI runs.
-  const out = execFileSync(
-    process.execPath,
-    ['--import', 'tsx', root('tools/public-api.ts'), '--check'],
-    { encoding: 'utf8', cwd: root('.') },
-  )
+/** The generator, as CI invokes it. Returns stdout+stderr and the exit code, never throwing. */
+function run(...args: string[]): { code: number; out: string } {
+  try {
+    const out = execFileSync(
+      process.execPath,
+      ['--import', 'tsx', root('tools/public-api.ts'), ...args],
+      { encoding: 'utf8', cwd: root('.'), stdio: ['ignore', 'pipe', 'pipe'] },
+    )
+    return { code: 0, out }
+  } catch (err) {
+    const e = err as { status?: number; stdout?: string; stderr?: string }
+    return { code: e.status ?? 1, out: `${e.stdout ?? ''}${e.stderr ?? ''}` }
+  }
+}
+
+test('the generator reports the description in sync', () => {
+  // The single source of truth for "is openapi.json stale" — the same command CI runs.
+  const { code, out } = run('--check')
+  assert.equal(code, 0, out)
   assert.match(out, /openapi in sync/)
+})
+
+test('--check cannot claim the gateway map was checked, because it did not read it', () => {
+  // The anti-vacuity assertion for the split itself. CI's gateway job greps stdout for the phrase
+  // below; if `--check` ever printed it, that job would pass while reading nothing, and the defect
+  // would be invisible exactly the way it was invisible before run 30691403652.
+  const { out } = run('--check')
+  assert.doesNotMatch(out, /every resource routed/)
+})
+
+test('a gateway map that is not there is a failure, never a pass', () => {
+  const { code, out } = run('--gateway', join(tmpdir(), 'cf-no-such-deploy-checkout'))
+  assert.equal(code, 1, 'a missing map must be exit 1 — the whole reason this test exists')
+  assert.match(out, /contains no/)
+  assert.doesNotMatch(out, /every resource routed/)
+})
+
+/**
+ * A synthetic micro-deploy checkout whose map routes exactly the resources named.
+ *
+ * The resource list is re-derived here from ROUTES rather than imported from the generator, on
+ * purpose: two independent derivations disagreeing is a finding, and a test that borrows the
+ * subject's own arithmetic can only ever confirm it.
+ */
+function deployCheckout(routers: readonly string[]): string {
+  const dir = mkdtempSync(join(tmpdir(), 'cf-deploy-'))
+  mkdirSync(join(dir, 'gateway', 'dynamic'), { recursive: true })
+  const rules = routers
+    .map((r) => `      rule: "Host(\`api.example\`) && PathPrefix(\`/v1/${r}\`)"`)
+    .join('\n')
+  writeFileSync(join(dir, 'gateway', 'dynamic', 'public-api.yml'), `http:\n  routers:\n${rules}\n`)
+  return dir
+}
+
+/** Every top-level resource segment the public surface exposes, derived from the table alone. */
+const RESOURCES = [
+  ...new Set(
+    Object.values(ROUTES).map((r) => {
+      const publicPath = r.path.startsWith('/v1/') ? r.path : `/v1${r.path}`
+      return publicPath.split('/').filter(Boolean)[1] ?? ''
+    }),
+  ),
+].sort()
+
+test('the gateway check passes a map that routes every resource', () => {
+  const { code, out } = run('--gateway', deployCheckout(RESOURCES))
+  assert.equal(code, 0, out)
   assert.match(out, /every resource routed/)
+})
+
+test('and fails the moment one router is missing — the checker can say no', () => {
+  // An assertion that the checker returns "all good" proves nothing unless the checker can say
+  // otherwise. Without this, `gatewayGaps` could return [] unconditionally and every other test
+  // here would stay green.
+  for (const dropped of RESOURCES) {
+    const { code, out } = run('--gateway', deployCheckout(RESOURCES.filter((r) => r !== dropped)))
+    assert.equal(code, 1, `dropping /v1/${dropped} must fail the check, and did not:\n${out}`)
+    assert.match(out, new RegExp(`/v1/${dropped} is not routed`))
+  }
+})
+
+test('a router that exists only in a comment does not count as routed', () => {
+  // This was a live bug: the generated map's header explains the layout using `/v1/rates` as its
+  // example, so removing the real router left the checker matching the PROSE and reporting
+  // everything routed. Six guards in this estate have confused a rule with a sentence about one;
+  // this is the only one that made a check too permissive rather than too strict.
+  const dir = deployCheckout(RESOURCES.filter((r) => r !== 'rates'))
+  const file = join(dir, 'gateway', 'dynamic', 'public-api.yml')
+  writeFileSync(
+    file,
+    `# The public path is api/v1/<resource>, e.g. PathPrefix(\`/v1/rates\`).\n${readFileSync(file, 'utf8')}`,
+  )
+  const { code, out } = run('--gateway', dir)
+  assert.equal(code, 1, 'the header sentence must not satisfy the router requirement')
+  assert.match(out, /\/v1\/rates is not routed/)
 })
 
 test('every operation in the description cites the line that serves it', () => {
@@ -96,10 +196,11 @@ test('a route the service refuses without Idempotency-Key says so in the descrip
   }
 })
 
-test('the gateway routes every resource, and the check can fail', () => {
-  // An assertion that the checker returns "all good" proves nothing unless the checker can say
-  // otherwise. This feeds it a table entry the gateway does not route.
-  const yaml = readFileSync(root('../deploy/gateway/dynamic/public-api.yml'), 'utf8')
-  assert.ok(yaml.includes('/v1/rates`'), 'a known resource must be present to compare against')
-  assert.equal(yaml.includes('/v1/nothing-routes-this`'), false)
+test('every resource the table exposes is a real segment, not an empty one', () => {
+  // The gateway routes on `resources`, so a route whose public path has no second segment would be
+  // routed by the prefix `/v1/` — i.e. by everything. Cheap to check, and the day it happens the
+  // symptom is a gateway rule that swallows the whole surface.
+  for (const r of RESOURCES) {
+    assert.match(r, /^[a-z][a-z0-9-]*$/, `"${r}" is not a routable resource segment`)
+  }
 })

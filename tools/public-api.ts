@@ -26,20 +26,81 @@
  * from OpenAPI. 11 §288 assumed the reverse, but there is no description to generate from, and a
  * citation into a serving line is stronger evidence than a document nobody has checked.
  *
+ * ## Why the two checks are separate flags
+ *
+ * `openapi.json` lives in this repository; the gateway map lives in `micro-deploy`, which is
+ * private and which a stranger holding the published tarball does not have. That is the same split
+ * `tools/drift.ts` already reasons about in its header: `pnpm test` has to pass with no sibling
+ * checkout, so an invariant that needs one belongs in a CI job rather than in the suite.
+ *
+ * The gateway half was NOT split, and the consequence was run 30691403652 — `pnpm test` shelled out
+ * to `--check`, `--check` read `../deploy/gateway/dynamic/public-api.yml` unconditionally, and
+ * micro-sdk's workflow checks out only micro-sdk. So it is split now, and the split is drawn so
+ * that neither half can be mistaken for the other:
+ *
+ *   * `--check` never claims the gateway was checked. It cannot print `every resource routed`.
+ *   * `--gateway` never TOLERATES a missing map. There is no skip path: a map that is not there is
+ *     exit 1, on a runner and on a laptop alike. A check that goes quiet when its input vanishes
+ *     is worse than no check, because it still looks like evidence.
+ *
  * Usage:
- *   node --import tsx tools/public-api.ts           # write both artefacts
- *   node --import tsx tools/public-api.ts --check   # exit 1 if either is stale
+ *   node --import tsx tools/public-api.ts                  # write openapi.json
+ *   node --import tsx tools/public-api.ts --check          # exit 1 if openapi.json is stale
+ *   node --import tsx tools/public-api.ts --gateway        # exit 1 unless the map routes everything
+ *   node --import tsx tools/public-api.ts --gateway <dir>  # …with the micro-deploy checkout named
  */
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ROUTES, type RouteSpec } from '../packages/sdk/src/routes.ts'
 
 const here = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url))
-const estate = (p: string) => fileURLToPath(new URL(`../../${p}`, import.meta.url))
 
 const OPENAPI_OUT = here('openapi.json')
-const GATEWAY_OUT = estate('deploy/gateway/dynamic/public-api.yml')
+
+/** The map's path inside a micro-deploy checkout, wherever that checkout happens to be. */
+const GATEWAY_REL = path.join('gateway', 'dynamic', 'public-api.yml')
+
+const REPO_ROOT = path.dirname(fileURLToPath(new URL('.', import.meta.url)))
+
+/** Where a micro-deploy checkout usually is, in the order CI and a developer's machine put it. */
+const DEPLOY_CANDIDATES = [
+  process.env['CLOUDSFORGE_DEPLOY_DIR'],
+  path.resolve(REPO_ROOT, '..', 'deploy'),
+  path.resolve(REPO_ROOT, '.deploy'),
+]
+
+/**
+ * The committed gateway map, or an error. Never a soft "not found" — see the header.
+ *
+ * An explicitly named root is STRICT: it is not allowed to fall back to a sibling. CI passes the
+ * directory it just checked out, and a fallback would mean a failed checkout silently graded
+ * against whatever else happened to be on disk.
+ */
+export function locateGateway(explicit?: string | undefined): string {
+  if (explicit !== undefined) {
+    const file = path.join(explicit, GATEWAY_REL)
+    if (existsSync(file)) return file
+    throw new Error(
+      `--gateway ${explicit} contains no ${GATEWAY_REL}.\n` +
+        'The named checkout is the one that must be graded, so this is a failure and not a\n' +
+        'fallback: a check that quietly grades a different file is not a check.',
+    )
+  }
+  const roots = DEPLOY_CANDIDATES.filter((value): value is string => Boolean(value))
+  for (const root of roots) {
+    const file = path.join(root, GATEWAY_REL)
+    if (existsSync(file)) return file
+  }
+  throw new Error(
+    'could not find the gateway route map. Pass --gateway <micro-deploy checkout>, set\n' +
+      'CLOUDSFORGE_DEPLOY_DIR, or place a checkout next to this repository. Looked in:\n' +
+      `${roots.map((r) => `  ${path.join(r, GATEWAY_REL)}`).join('\n')}\n\n` +
+      'This is deliberately fatal. micro-sdk run 30691403652 failed because the map was absent on\n' +
+      'the runner; the fix is to check micro-deploy out, never to let the check pass without it.',
+  )
+}
 
 type Entry = RouteSpec & { key: string }
 const entries: Entry[] = Object.entries(ROUTES).map(([key, r]) => ({ key, ...(r as RouteSpec) }))
@@ -213,8 +274,30 @@ export function gatewayGaps(yaml: string): string[] {
 
 /* ------------------------------------------------------------------------- main */
 
-function main(): number {
-  const check = process.argv.includes('--check')
+/** `--gateway` may be bare or carry a root; a following flag is another option, not a directory. */
+function gatewayRoot(argv: readonly string[]): string | undefined {
+  const at = argv.indexOf('--gateway')
+  if (at === -1) return undefined
+  const next = argv[at + 1]
+  return next !== undefined && !next.startsWith('--') ? next : undefined
+}
+
+/** Exit 1 unless the committed map routes every resource in the table. Absence is exit 1 too. */
+function checkGateway(root: string | undefined): number {
+  const file = locateGateway(root)
+  const gaps = gatewayGaps(readFileSync(file, 'utf8'))
+  if (gaps.length) {
+    console.error(`the gateway does not route every public resource — ${file}:`)
+    for (const g of gaps) console.error(`  ${g}`)
+    return 1
+  }
+  console.log(`ok: every resource routed by ${file}`)
+  return 0
+}
+
+function main(argv: readonly string[]): number {
+  const check = argv.includes('--check')
+  const gateway = argv.includes('--gateway')
 
   const clash = collisions()
   if (clash.length) {
@@ -224,11 +307,9 @@ function main(): number {
   }
 
   const openapi = `${JSON.stringify(buildOpenApi(), null, 2)}\n`
-  const gatewayYaml = readFileSync(GATEWAY_OUT, 'utf8')
-  const gaps = gatewayGaps(gatewayYaml)
+  let bad = false
 
   if (check) {
-    let bad = false
     const current = (() => {
       try {
         return readFileSync(OPENAPI_OUT, 'utf8')
@@ -239,25 +320,35 @@ function main(): number {
     if (current !== openapi) {
       console.error(`stale: ${OPENAPI_OUT} — run without --check`)
       bad = true
+    } else {
+      // Deliberately silent about the gateway. `--check` did not read it, so it must not be
+      // possible to read this line as evidence that it did.
+      console.log(`ok: ${entries.length} routes, openapi in sync`)
     }
-    if (gaps.length) {
-      console.error('the gateway does not route every public resource:')
-      for (const g of gaps) console.error(`  ${g}`)
-      bad = true
-    }
-    if (!bad) console.log(`ok: ${entries.length} routes, openapi in sync, every resource routed`)
-    return bad ? 1 : 0
   }
+
+  if (gateway && checkGateway(gatewayRoot(argv)) !== 0) bad = true
+
+  if (check || gateway) return bad ? 1 : 0
 
   writeFileSync(OPENAPI_OUT, openapi)
   console.log(`wrote ${OPENAPI_OUT} — ${entries.length} routes`)
-  if (gaps.length) {
-    console.error('WARNING: the gateway does not route every public resource:')
-    for (const g of gaps) console.error(`  ${g}`)
-    return 1
+  // Writing is not a gate, so a developer with no micro-deploy checkout is not stopped here — but
+  // they are told, in the same breath, that the map was not graded. `--gateway` is the gate.
+  const found = DEPLOY_CANDIDATES.filter((value): value is string => Boolean(value)).find((root) =>
+    existsSync(path.join(root, GATEWAY_REL)),
+  )
+  if (found === undefined) {
+    console.log('note: no micro-deploy checkout found, so the gateway map was NOT checked')
+    return 0
   }
-  console.log(`ok: every public resource is routed by ${GATEWAY_OUT}`)
-  return 0
+  return checkGateway(found)
 }
 
-process.exit(main())
+try {
+  process.exit(main(process.argv.slice(2)))
+} catch (err) {
+  // A stack trace for a missing checkout reads like a crash in the tool. It is a verdict.
+  console.error(`public-api: ${err instanceof Error ? err.message : String(err)}`)
+  process.exit(1)
+}

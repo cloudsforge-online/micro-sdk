@@ -12,6 +12,7 @@
     "test": "pnpm -r test",
     "build": "pnpm -r build",
     "drift": "node --import tsx tools/drift.ts",
+    "public-api": "node --import tsx tools/public-api.ts",
     "check": "pnpm typecheck && pnpm test"
   },
   "devDependencies": {

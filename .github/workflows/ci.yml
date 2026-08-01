@@ -5,13 +5,21 @@ name: CI
 # does not fit it, and forcing it through would mean weakening the rules for everyone else. This is
 # the same minimal bespoke check micro-contracts and micro-ui run, for the same reason.
 #
-# Two jobs here exist nowhere else in the estate, because nothing else in the estate is public:
+# Three jobs here exist nowhere else in the estate, because nothing else in the estate is public:
 #
 #   * `drift` — packages/sdk/src/chain.ts DUPLICATES constants from the private contracts package,
 #     because a public package cannot depend on a private repository. Duplicating a value the
 #     estate exact-pins is only defensible with a check; this is the check. It cannot be a test:
 #     `pnpm test` has to pass for somebody holding only the published tarball, and they have no
 #     sibling checkout — so it would have to skip, and a skipped test is an unmeasured one.
+#
+#   * `gateway` — the same shape, arrived at the hard way. `publicapi.test.ts` read the gateway
+#     route map out of a micro-deploy sibling that this workflow never checked out, so run
+#     30691403652 was red on correct code. The rule drift already states applies unchanged: an
+#     invariant needing a private sibling is a JOB, not a test. So micro-deploy is checked out here
+#     and the REAL map is graded — and then a router is deleted from it and the check is required
+#     to go red, because a job that grades a file it failed to fetch would look exactly like a
+#     job that passed.
 #
 #   * `pack` — rule 5 of this repository's brief: `pnpm pack` must produce a tarball a stranger
 #     could use. That is not provable by typecheck. The job installs the tarball into an empty
@@ -69,6 +77,60 @@ jobs:
             packages/chain/src
 
       - run: pnpm drift --contracts .contracts
+
+  gateway:
+    name: The gateway routes every public resource
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+
+      - name: Fetch the gateway route map
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/micro-deploy
+          ref: main
+          path: .deploy
+          # micro-deploy is private and the job token is scoped to THIS repository. Same failure,
+          # and same fix, as `drift` above.
+          token: ${{ secrets.ESTATE_READ_TOKEN || github.token }}
+          sparse-checkout: |
+            gateway/dynamic
+
+      # `--gateway` has no skip path: a map that is not there is exit 1. So a checkout that
+      # silently produced nothing fails HERE, loudly, rather than being graded as routed.
+      - name: Every resource in the verified table is routed
+        run: pnpm public-api --check --gateway .deploy
+
+      - name: …and the check would notice if it were not
+        # The assertion that makes the step above mean something. It is not enough that the checker
+        # returns "all good": it has to be shown, against the REAL committed map, that it can
+        # return otherwise. Otherwise a checkout that fetched an empty tree, or a `gatewayGaps` that
+        # someone reduced to `return []`, would look identical to a routed estate.
+        #
+        # The router is COMMENTED OUT rather than deleted, deliberately. The text the checker looks
+        # for is then still present in the file, and only comment-stripping makes the difference —
+        # so this proves in one step that the checker reads this file AND that it still tells a
+        # rule from a sentence about one, which is the bug that once made it report everything
+        # routed.
+        run: |
+          set -euo pipefail
+          real=.deploy/gateway/dynamic/public-api.yml
+          mutant="$RUNNER_TEMP/mutant"
+          mkdir -p "$mutant/gateway/dynamic"
+          sed 's|^\(.*PathPrefix(`/v1/rates`).*\)$|#\1|' "$real" > "$mutant/gateway/dynamic/public-api.yml"
+          if diff -q "$real" "$mutant/gateway/dynamic/public-api.yml" >/dev/null; then
+            echo "::error::the mutation changed nothing — the /v1/rates router is not where this step thinks"
+            exit 1
+          fi
+          if pnpm public-api --gateway "$mutant"; then
+            echo "::error::the check passed a map whose /v1/rates router is commented out — it is not reading the map"
+            exit 1
+          fi
+          echo "ok: commenting out one router turns the check red, so a pass is evidence"
 
   pack:
     name: A stranger can install the tarball
