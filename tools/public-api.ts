@@ -6,7 +6,8 @@
  * `packages/sdk/src/routes.ts` is the only place in the estate that knows the public surface, and
  * every entry in it carries a `verifiedAt` citation into the line of the service that registers
  * the route. It was written by reading the services one route at a time, because this estate had
- * already shipped five clients built against a surface somebody imagined.
+ * already shipped a run of clients built against a surface somebody imagined — enumerated in
+ * `docs/ecosystem/18-build-status.md` §3.3i, whose heading carries the running count.
  *
  * Two things were missing that both describe that same surface:
  *

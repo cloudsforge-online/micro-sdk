@@ -3,7 +3,7 @@
  *
  * WHY it is a table rather than a string literal at each call site:
  *
- * This estate has already shipped five clients built against a surface somebody imagined —
+ * This estate has already shipped a run of clients built against a surface somebody imagined —
  * including one that returned 403 on every marketplace listing because it sent a token to a route
  * that has no `authenticate()` call and never wanted one. A public SDK is the worst place for that
  * failure: a third party cannot read the service source to find out that the method they called

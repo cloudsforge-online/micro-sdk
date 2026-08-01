@@ -32,7 +32,7 @@ import { test } from 'node:test'
  *
  * A citation like `wallet/src/server.ts:440` DOES ship. It is a service-relative source path, not a
  * hostname, a credential, a repository URL or a route. It is also the most valuable thing in this
- * package: this estate has shipped five clients built against a surface somebody imagined, and the
+ * package: this estate has shipped clients built against a surface somebody imagined, and the
  * citations are how the next reader checks that these methods correspond to routes that exist.
  * Removing them would remove the evidence and leave the claim. The exception is narrow — a path
  * ending `/src/<file>.ts` with an optional line number — and everything else on the list is
