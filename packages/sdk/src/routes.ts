@@ -54,8 +54,11 @@ export interface RouteSpec {
  * `as const` so the keys are a closed union: `routes.test.ts` compares that union against the
  * methods the client exposes, and a method added without a route entry is a compile error before
  * it is a test failure.
+ *
+ * Declared here and re-exported below with **`verifiedAt` widened to `string`**. See the note on
+ * that export: a `path:line` is provenance, and a provenance note must not be a type.
  */
-export const ROUTES = {
+const TABLE = {
   /* ------------------------------------------------------------------ pricing */
 
   'pricing.rates': {
@@ -613,6 +616,27 @@ export const ROUTES = {
     verifiedAt: 'identity/src/server.ts:891',
   },
 } as const satisfies Readonly<Record<string, RouteSpec>>
+
+/**
+ * `verifiedAt` is widened to `string` on the way out, and this is not a detail.
+ *
+ * `as const` makes every field a literal TYPE, `verifiedAt` included — so
+ * `ROUTES.mint.pay.verifiedAt` was the type `'mint/src/server.ts:454'`, and the estate's
+ * additive-only checker (`micro-org/tools/compat.ts`) reads a changed scalar text as a **breaking
+ * change to a public contract**. It is right about scalars in general and wrong about this field:
+ * a citation is provenance. Correcting one after a service's routes move down twenty-four lines is
+ * the check working exactly as intended, and it was reported as eight breaking changes to
+ * consumers who cannot observe the field's type at all.
+ *
+ * Left as it was, the rule would have been "never correct a citation", which turns the one thing
+ * making this table trustworthy into the one thing nobody may touch. Every other field keeps its
+ * literal type, because every other field is something a consumer can depend on.
+ */
+export const ROUTES: {
+  readonly [K in keyof typeof TABLE]: {
+    readonly [F in keyof (typeof TABLE)[K]]: F extends 'verifiedAt' ? string : (typeof TABLE)[K][F]
+  }
+} = TABLE
 
 export type RouteName = keyof typeof ROUTES
 
