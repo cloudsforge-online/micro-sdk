@@ -1,0 +1,2041 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CloudsForge public API",
+    "version": "0.1.0",
+    "description": "Generated from the verified route table in @cloudsforge/sdk. Every operation cites the line of the owning service that registers it. Paths are as the GATEWAY serves them: uniformly versioned under /v1, which four of the eight services do not do themselves.",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.cloudsforge.online",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A developer platform API key, presented as a bearer token."
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "activity"
+    },
+    {
+      "name": "foresight"
+    },
+    {
+      "name": "identity"
+    },
+    {
+      "name": "market"
+    },
+    {
+      "name": "mint"
+    },
+    {
+      "name": "pricing"
+    },
+    {
+      "name": "wallet"
+    },
+    {
+      "name": "worlds"
+    }
+  ],
+  "paths": {
+    "/v1/rates": {
+      "get": {
+        "operationId": "pricing.rates",
+        "summary": "GET /v1/rates",
+        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts:312`.",
+        "tags": [
+          "pricing"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/rates/{asset}": {
+      "get": {
+        "operationId": "pricing.rate",
+        "summary": "GET /v1/rates/:asset",
+        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts:321`.",
+        "tags": [
+          "pricing"
+        ],
+        "parameters": [
+          {
+            "name": "asset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/wallets": {
+      "get": {
+        "operationId": "wallet.list",
+        "summary": "GET /v1/wallets",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:440`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "post": {
+        "operationId": "wallet.register",
+        "summary": "POST /v1/wallets",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:463`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/wallets/{id}": {
+      "get": {
+        "operationId": "wallet.get",
+        "summary": "GET /v1/wallets/:id",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:501`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "patch": {
+        "operationId": "wallet.update",
+        "summary": "PATCH /v1/wallets/:id",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:510`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/wallets/verify": {
+      "post": {
+        "operationId": "wallet.verify",
+        "summary": "POST /v1/wallets/verify",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:528`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/wallets/{id}/authorisations": {
+      "post": {
+        "operationId": "wallet.grantAuthorisation",
+        "summary": "POST /v1/wallets/:id/authorisations",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:557`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/wallets/{id}/authorisations/{authorisation}": {
+      "delete": {
+        "operationId": "wallet.revokeAuthorisation",
+        "summary": "DELETE /v1/wallets/:id/authorisations/:authorisation",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:578`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorisation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/deposits": {
+      "post": {
+        "operationId": "deposits.assign",
+        "summary": "POST /v1/deposits",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:604`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "get": {
+        "operationId": "deposits.list",
+        "summary": "GET /v1/deposits",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:624`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/deposits/credits": {
+      "get": {
+        "operationId": "deposits.credits",
+        "summary": "GET /v1/deposits/credits",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:631`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/withdrawals": {
+      "post": {
+        "operationId": "withdrawals.request",
+        "summary": "POST /v1/withdrawals",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:645`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "get": {
+        "operationId": "withdrawals.list",
+        "summary": "GET /v1/withdrawals",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:685`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/withdrawals/{id}": {
+      "get": {
+        "operationId": "withdrawals.get",
+        "summary": "GET /v1/withdrawals/:id",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:697`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/spend": {
+      "post": {
+        "operationId": "money.spend",
+        "summary": "POST /v1/spend",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:707`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/transfers": {
+      "post": {
+        "operationId": "money.transfer",
+        "summary": "POST /v1/transfers",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:734`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/conversions": {
+      "post": {
+        "operationId": "money.convert",
+        "summary": "POST /v1/conversions",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:761`.",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/portfolio": {
+      "get": {
+        "operationId": "portfolio.get",
+        "summary": "GET /v1/portfolio",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:790`.",
+        "tags": [
+          "wallet"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/collections": {
+      "get": {
+        "operationId": "market.collections",
+        "summary": "GET /v1/collections",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:596`.",
+        "tags": [
+          "market"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "post": {
+        "operationId": "market.createCollection",
+        "summary": "POST /v1/collections",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:602`.",
+        "tags": [
+          "market"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings": {
+      "get": {
+        "operationId": "market.listings",
+        "summary": "GET /v1/listings",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:618`.",
+        "tags": [
+          "market"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "post": {
+        "operationId": "market.createListing",
+        "summary": "POST /v1/listings",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:651`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}": {
+      "get": {
+        "operationId": "market.listing",
+        "summary": "GET /v1/listings/:id",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:636`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "delete": {
+        "operationId": "market.cancelListing",
+        "summary": "DELETE /v1/listings/:id",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:776`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}/activate": {
+      "post": {
+        "operationId": "market.activateListing",
+        "summary": "POST /v1/listings/:id/activate",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:742`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}/risk": {
+      "get": {
+        "operationId": "market.risk",
+        "summary": "GET /v1/listings/:id/risk",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:790`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}/buy": {
+      "post": {
+        "operationId": "market.buy",
+        "summary": "POST /v1/listings/:id/buy",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:818`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}/bids": {
+      "get": {
+        "operationId": "market.bids",
+        "summary": "GET /v1/listings/:id/bids",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:846`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "post": {
+        "operationId": "market.placeBid",
+        "summary": "POST /v1/listings/:id/bids",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:863`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/listings/{id}/offers": {
+      "get": {
+        "operationId": "market.offers",
+        "summary": "GET /v1/listings/:id/offers",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:893`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "post": {
+        "operationId": "market.makeOffer",
+        "summary": "POST /v1/listings/:id/offers",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:898`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/offers/{id}": {
+      "delete": {
+        "operationId": "market.withdrawOffer",
+        "summary": "DELETE /v1/offers/:id",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:917`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/offers/{id}/accept": {
+      "post": {
+        "operationId": "market.acceptOffer",
+        "summary": "POST /v1/offers/:id/accept",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:931`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The service REFUSES this request without the header — a 400, not a convention. Reuse the same key to retry safely; a replay returns the original result rather than acting twice.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/orders": {
+      "get": {
+        "operationId": "market.orders",
+        "summary": "GET /v1/orders",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:969`.",
+        "tags": [
+          "market"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/orders/{id}": {
+      "get": {
+        "operationId": "market.order",
+        "summary": "GET /v1/orders/:id",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:980`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/orders/{id}/disputes": {
+      "post": {
+        "operationId": "market.openDispute",
+        "summary": "POST /v1/orders/:id/disputes",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:993`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/verifications/{urn}": {
+      "get": {
+        "operationId": "market.verification",
+        "summary": "GET /v1/verifications/:urn",
+        "description": "Owned by `market`. Verified against `market/src/server.ts:1091`.",
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "name": "urn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/catalogue": {
+      "get": {
+        "operationId": "mint.catalogue",
+        "summary": "GET /v1/catalogue",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:340`.",
+        "tags": [
+          "mint"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/tokens": {
+      "post": {
+        "operationId": "mint.createToken",
+        "summary": "POST /v1/tokens",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:359`.",
+        "tags": [
+          "mint"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "get": {
+        "operationId": "mint.tokens",
+        "summary": "GET /v1/tokens",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:417`.",
+        "tags": [
+          "mint"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/tokens/{id}": {
+      "get": {
+        "operationId": "mint.token",
+        "summary": "GET /v1/tokens/:id",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:430`.",
+        "tags": [
+          "mint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/tokens/{id}/pay": {
+      "post": {
+        "operationId": "mint.pay",
+        "summary": "POST /v1/tokens/:id/pay",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:454`.",
+        "tags": [
+          "mint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/tokens/{id}/deploy": {
+      "post": {
+        "operationId": "mint.deploy",
+        "summary": "POST /v1/tokens/:id/deploy",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:491`.",
+        "tags": [
+          "mint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/tokens/{id}/page": {
+      "put": {
+        "operationId": "mint.putPage",
+        "summary": "PUT /v1/tokens/:id/page",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:546`.",
+        "tags": [
+          "mint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "get": {
+        "operationId": "mint.page",
+        "summary": "GET /v1/tokens/:id/page",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts:572`.",
+        "tags": [
+          "mint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/categories": {
+      "get": {
+        "operationId": "foresight.categories",
+        "summary": "GET /v1/categories",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:398`.",
+        "tags": [
+          "foresight"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/markets": {
+      "get": {
+        "operationId": "foresight.markets",
+        "summary": "GET /v1/markets",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:409`.",
+        "tags": [
+          "foresight"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/markets/{id}": {
+      "get": {
+        "operationId": "foresight.market",
+        "summary": "GET /v1/markets/:id",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:424`.",
+        "tags": [
+          "foresight"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/markets/{id}/positions/{address}": {
+      "get": {
+        "operationId": "foresight.position",
+        "summary": "GET /v1/markets/:id/positions/:address",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:455`.",
+        "tags": [
+          "foresight"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/markets/{id}/stake-intent": {
+      "post": {
+        "operationId": "foresight.stakeIntent",
+        "summary": "POST /v1/markets/:id/stake-intent",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:490`.",
+        "tags": [
+          "foresight"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/titles": {
+      "get": {
+        "operationId": "worlds.titles",
+        "summary": "GET /v1/titles",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:467`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/players/me": {
+      "get": {
+        "operationId": "worlds.player",
+        "summary": "GET /v1/players/me",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:524`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "put": {
+        "operationId": "worlds.updatePlayer",
+        "summary": "PUT /v1/players/me",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:551`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/players/me/cosmetics": {
+      "put": {
+        "operationId": "worlds.equip",
+        "summary": "PUT /v1/players/me/cosmetics",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:576`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/players/me/inventory": {
+      "get": {
+        "operationId": "worlds.inventory",
+        "summary": "GET /v1/players/me/inventory",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:598`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/players/me/inventory/{id}/list": {
+      "post": {
+        "operationId": "worlds.listItem",
+        "summary": "POST /v1/players/me/inventory/:id/list",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:617`.",
+        "tags": [
+          "worlds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      },
+      "delete": {
+        "operationId": "worlds.unlistItem",
+        "summary": "DELETE /v1/players/me/inventory/:id/list",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:631`.",
+        "tags": [
+          "worlds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/provisions": {
+      "get": {
+        "operationId": "worlds.provisions",
+        "summary": "GET /v1/provisions",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:642`.",
+        "tags": [
+          "worlds"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/provisions/{id}": {
+      "get": {
+        "operationId": "worlds.provision",
+        "summary": "GET /v1/provisions/:id",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:683`.",
+        "tags": [
+          "worlds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/titles/{id}/achievements": {
+      "get": {
+        "operationId": "worlds.achievements",
+        "summary": "GET /v1/titles/:id/achievements",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:701`.",
+        "tags": [
+          "worlds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/titles/{id}/seasons": {
+      "get": {
+        "operationId": "worlds.seasons",
+        "summary": "GET /v1/titles/:id/seasons",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:755`.",
+        "tags": [
+          "worlds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/feed": {
+      "get": {
+        "operationId": "activity.feed",
+        "summary": "GET /v1/feed",
+        "description": "Owned by `activity`. Verified against `activity/src/server.ts:318`.",
+        "tags": [
+          "activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/feed/{id}": {
+      "get": {
+        "operationId": "activity.record",
+        "summary": "GET /v1/feed/:id",
+        "description": "Owned by `activity`. Verified against `activity/src/server.ts:351`.",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "operationId": "identity.me",
+        "summary": "GET /v1/auth/me",
+        "description": "Owned by `identity`. Verified against `identity/src/server.ts:891`.",
+        "tags": [
+          "identity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "The request was refused. The body carries `error.code` and `error.requestId`."
+          }
+        }
+      }
+    }
+  }
+}
