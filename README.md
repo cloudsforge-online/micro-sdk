@@ -1,5 +1,7 @@
 # cloudsforge-sdk
 
+[![ci](https://github.com/cloudsforge-online/micro-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/cloudsforge-online/micro-sdk/actions/workflows/ci.yml) [![TypeScript](https://img.shields.io/badge/TypeScript-strict%20ESM-3178C6?logo=typescript&logoColor=white)](./tsconfig.base.json) [![node](https://img.shields.io/badge/node-%3E%3D22-5FA04E?logo=nodedotjs&logoColor=white)](./package.json) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
 The workspace that publishes **[`@cloudsforge/sdk`](packages/sdk)** — the typed client for the
 CloudsForge public API — and **[`@cloudsforge/cli`](packages/cli)**, the `cloudsforge` command.
 
@@ -93,5 +95,5 @@ MIT.
 
 ## Provenance
 
-The code in this repository was written by **Claude Opus 5** and **Claude Fable 5**, under
-human direction and review.
+The code in this repository was written by **Claude Opus 5** and **Claude Fable 5**, assets
+generated with **FLUX 2 Pro**, under human direction and review.
