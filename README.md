@@ -7,7 +7,7 @@ CloudsForge public API — and **[`@cloudsforge/cli`](packages/cli)**, the `clou
 pnpm install && pnpm check
 ```
 
-Specification: `docs/ecosystem/03-repository-responsibilities.md` §1.4.
+Design authority: [`ecosystem/03-repository-responsibilities.md`](https://github.com/cloudsforge-online/micro-docs/blob/main/ecosystem/03-repository-responsibilities.md) §1.4.
 
 ---
 
@@ -88,3 +88,10 @@ produces a usable tarball today: `@cloudsforge/sdk` has no dependencies at all, 
 ## Licence
 
 MIT.
+
+---
+
+## Provenance
+
+The code in this repository was written by **Claude Opus 5** and **Claude Fable 5**, under
+human direction and review.
