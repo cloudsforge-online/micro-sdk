@@ -32,6 +32,7 @@ import { fileURLToPath } from 'node:url'
 import {
   ASSETS,
   ASSET_CODES,
+  ON_CHAIN_ASSETS,
   RATE_SCALE,
   SHARDS_PER_USD,
   type AssetCode,
@@ -88,6 +89,44 @@ function assetFacts(text: string, asset: AssetCode): { decimals: number; confirm
   return { decimals: Number(decimals[1]), confirmations: Number(confirmations[1]) }
 }
 
+/**
+ * The upstream `AssetCode` union, as a set of codes.
+ *
+ * ══════════════════════════════════════════════════════════════════════════════════════════════
+ * THE GAP THIS CLOSES, AND WHAT IT COST.
+ *
+ * Until 2026-08-05 this script compared VALUES for the assets THIS SDK already knew — it looped
+ * `ASSET_CODES`, ours, and looked each one up upstream. So it could tell you that our BTC depth
+ * disagreed, but it was structurally incapable of telling you that upstream had an asset we did
+ * not. Litecoin sat in the upstream `CHAINS` table for two phases and this check had nothing to
+ * say about it, because it never asked a question whose answer could have been "there is a sixth".
+ *
+ * That is the more dangerous half of a drift check: an incomplete copy looks exactly like a
+ * correct one from the inside. A consumer calling `assetSpec('LTC')` got a type error and
+ * concluded the platform does not support Litecoin — which the platform's own custody, settlement
+ * and wallet services would have disagreed with.
+ *
+ * So both directions are now compared, as SETS: an asset upstream has and we lack, and an asset we
+ * have and upstream does not.
+ * ══════════════════════════════════════════════════════════════════════════════════════════════
+ */
+function upstreamAssetCodes(text: string): readonly string[] {
+  const match = /export type AssetCode = ([^\n]+)/.exec(text)
+  if (!match?.[1]) throw new Error('could not read the upstream AssetCode union')
+  const codes = [...match[1].matchAll(/'([A-Z]+)'/g)].map((m) => m[1] as string)
+  if (codes.length === 0) throw new Error('the upstream AssetCode union parsed to nothing')
+  return codes
+}
+
+/** The upstream `ON_CHAIN_ASSETS` array literal. Same regex shape micro-site's claims test uses. */
+function upstreamOnChainAssets(text: string): readonly string[] {
+  const match = /ON_CHAIN_ASSETS:[^=]*=\s*Object\.freeze\(\[([^\]]*)\]/.exec(text)
+  if (!match?.[1]) throw new Error('upstream ON_CHAIN_ASSETS is no longer a frozen array literal')
+  const codes = [...match[1].matchAll(/'([A-Z]+)'/g)].map((m) => m[1] as string)
+  if (codes.length === 0) throw new Error('upstream ON_CHAIN_ASSETS parsed to nothing')
+  return codes
+}
+
 function main(argv: readonly string[]): number {
   let upstream: Upstream
   try {
@@ -104,9 +143,25 @@ function main(argv: readonly string[]): number {
     }
   }
 
+  /** Set difference, reported in both directions so neither a missing nor an extra asset hides. */
+  const compareSets = (what: string, ours: readonly string[], theirs: readonly string[]): void => {
+    const missing = theirs.filter((code) => !ours.includes(code))
+    const extra = ours.filter((code) => !theirs.includes(code))
+    if (missing.length > 0) {
+      findings.push(`${what}: the contract has ${missing.join(', ')} and this SDK does not`)
+    }
+    if (extra.length > 0) {
+      findings.push(`${what}: this SDK has ${extra.join(', ')} and the contract does not`)
+    }
+  }
+
   try {
     compare('RATE_SCALE', RATE_SCALE, bigintConstant(upstream.text, 'RATE_SCALE'))
     compare('SHARDS_PER_USD', SHARDS_PER_USD, bigintConstant(upstream.text, 'SHARDS_PER_USD'))
+    // The SETS first: an asset upstream has and we lack would otherwise be invisible to every
+    // comparison below, because those all iterate OUR list.
+    compareSets('AssetCode', ASSET_CODES, upstreamAssetCodes(upstream.text))
+    compareSets('ON_CHAIN_ASSETS', ON_CHAIN_ASSETS, upstreamOnChainAssets(upstream.text))
     for (const asset of ASSET_CODES) {
       const theirs = assetFacts(upstream.text, asset)
       compare(`${asset}.decimals`, ASSETS[asset].decimals, theirs.decimals)

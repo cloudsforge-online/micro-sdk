@@ -41,7 +41,7 @@ export type ChainFamily = 'evm' | 'ember' | 'solana' | 'bitcoin' | 'xrp'
 
 export type Network = 'mainnet' | 'testnet'
 
-export type AssetCode = 'EMBER' | 'BTC' | 'ETH' | 'SOL' | 'XRP' | 'SHARD'
+export type AssetCode = 'EMBER' | 'BTC' | 'ETH' | 'LTC' | 'SOL' | 'XRP' | 'SHARD'
 
 export interface AssetSpec {
   readonly asset: AssetCode
@@ -63,7 +63,15 @@ export interface AssetSpec {
 export const ASSETS: Readonly<Record<AssetCode, AssetSpec>> = Object.freeze({
   EMBER: Object.freeze({ asset: 'EMBER', family: 'ember', name: 'Hearth', decimals: 18, confirmations: 60 }),
   ETH: Object.freeze({ asset: 'ETH', family: 'evm', name: 'Ethereum', decimals: 18, confirmations: 12 }),
-  BTC: Object.freeze({ asset: 'BTC', family: 'bitcoin', name: 'Bitcoin', decimals: 8, confirmations: 3 }),
+  // SIX, NOT THREE. This said 3 until 2026-08-05, while the platform has credited at 6 since
+  // native deposits were built — so every integration built on this SDK was told a Bitcoin deposit
+  // was final roughly half an hour before the platform agreed. `tools/drift.ts` was reporting it
+  // the whole time; nothing in CI was failing on the report. See the header of that file.
+  BTC: Object.freeze({ asset: 'BTC', family: 'bitcoin', name: 'Bitcoin', decimals: 8, confirmations: 6 }),
+  // Litecoin. Bitcoin's family, and deliberately NOT Bitcoin's depth: ~2.5-minute blocks on a
+  // fraction of Bitcoin's hashrate, so twelve confirmations is ~30 minutes rather than six being
+  // fifteen. Copying the number because the family matches is the mistake upstream warns about.
+  LTC: Object.freeze({ asset: 'LTC', family: 'bitcoin', name: 'Litecoin', decimals: 8, confirmations: 12 }),
   SOL: Object.freeze({ asset: 'SOL', family: 'solana', name: 'Solana', decimals: 9, confirmations: 32 }),
   XRP: Object.freeze({ asset: 'XRP', family: 'xrp', name: 'XRP Ledger', decimals: 6, confirmations: 1 }),
   // Shards never touch a chain. Present so the record is total and a lookup cannot be undefined.
@@ -75,6 +83,7 @@ export const ON_CHAIN_ASSETS: readonly AssetCode[] = Object.freeze([
   'EMBER',
   'BTC',
   'ETH',
+  'LTC',
   'SOL',
   'XRP',
 ])
@@ -83,6 +92,7 @@ export const ASSET_CODES: readonly AssetCode[] = Object.freeze([
   'EMBER',
   'BTC',
   'ETH',
+  'LTC',
   'SOL',
   'XRP',
   'SHARD',
