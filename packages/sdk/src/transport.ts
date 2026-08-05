@@ -107,7 +107,7 @@ export interface CallOptions {
 }
 
 /** Read from package.json at build time is not possible in a .ts source; kept in step by a test. */
-export const SDK_VERSION = '0.1.0'
+export const SDK_VERSION = '0.2.0'
 
 export class Transport {
   readonly #baseUrl: string
