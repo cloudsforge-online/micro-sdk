@@ -106,8 +106,23 @@ export interface CallOptions {
   readonly traceparent?: string
 }
 
-/** Read from package.json at build time is not possible in a .ts source; kept in step by a test. */
-export const SDK_VERSION = '0.2.0'
+/**
+ * Read from package.json at build time is not possible in a .ts source; kept in step by a test.
+ *
+ * **ANNOTATED `string`, AND THE ANNOTATION IS THE POINT.** Left bare, `const` infers the literal
+ * type `'0.2.0'`, which makes the DECLARED TYPE of this export change on every single release —
+ * so the additive-contract gate read 0.1.0 → 0.2.0 as a breaking change to the public surface
+ * (`SDK_VERSION: type-changed — was '"0.1.0"', is now '"0.2.0"'`). That is a gate firing by
+ * construction rather than on a defect: it would fire on every release forever, and a gate that
+ * has to be overridden to ship guards nothing.
+ *
+ * A version is DATA, not a type. It is interpolated into the User-Agent below and compared at
+ * runtime by `index.test.ts`; nothing anywhere narrows on it, and no consumer in the estate reads
+ * its type at all. This is the same judgement `ROUTES.*.verifiedAt` already carries in
+ * `routes.ts` — provenance that `as const` swept into the type by accident. The declaration was
+ * wrong, not the checker.
+ */
+export const SDK_VERSION: string = '0.2.0'
 
 export class Transport {
   readonly #baseUrl: string
