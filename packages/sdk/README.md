@@ -231,12 +231,23 @@ to the documentation.
 
 ### One thing to know about `baseUrl`
 
-The public API is specified as `api.cloudsforge.online/v1`, but **the gateway's path mapping is not
-defined yet** — there is no route table for it in the deployment configuration, and inventing one
-here would be exactly the imagined surface this SDK refuses to ship. The paths in `ROUTES` are the
-services' own paths, which is what a reverse proxy without rewriting produces.
+The public API is `https://api.cloudsforge.online/v1`, and **the gateway's path mapping now
+exists** — measured 2026-08-05, `/v1/rates` and `/v1/titles` both answer `200 application/json`.
+The paths in `ROUTES` are the services' own paths, which is what a reverse proxy without rewriting
+produces, so the default works as shipped.
 
-If the gateway ends up mounting them under a prefix, set `pathPrefix` and nothing else changes:
+Two things worth knowing about that host:
+
+- **Only `/v1/…` is routed.** An unmatched path such as `/` or `/livez` answers `502` rather than
+  `404` — a known defect being corrected to `404`, not a sign the API is down. Every `/v1` route
+  works.
+- **`api.<apex>` serves no HTML.** It is `servesUi: false` in
+  `ui/packages/ui/src/surfaces.ts:767`; do not link a person to it.
+
+For testnet, use `https://api-testnet.cloudsforge.online` — testnet hostnames are single-label
+`<surface>-testnet.cloudsforge.online`, never `<surface>.testnet.cloudsforge.online`.
+
+If you mount the routes under a different prefix, set `pathPrefix` and nothing else changes:
 
 ```ts
 new CloudsForge({ baseUrl: 'https://api.cloudsforge.online', pathPrefix: '/v1' })

@@ -71,12 +71,15 @@ Before it is flipped, all of these should be true:
 
 1. `pnpm drift` is green against the current contract source — the published constants agree with
    the ones the platform credits money at.
-2. The gateway's path mapping for `api.cloudsforge.online/v1` exists. Today it does not, and the
-   SDK says so in its README and offers `pathPrefix` as the seam. A public SDK whose base URL is a
-   guess is a support burden from day one.
-3. `api.cloudsforge.online` no longer points at the game API. It currently does; the rename to
-   `worlds-api.` is a prerequisite recorded in the migration backlog, and renaming a hostname after
-   third parties are on it costs a twelve-month deprecation cycle.
+2. ~~The gateway's path mapping for `api.cloudsforge.online/v1` exists.~~ **Done.** Measured on
+   2026-08-05: `https://api.cloudsforge.online/v1/rates` → `200 application/json`, and the same on
+   `https://api-testnet.cloudsforge.online/v1/rates`. `pathPrefix` remains the seam for anyone
+   mounting the routes elsewhere, but the default base URL is no longer a guess.
+3. ~~`api.cloudsforge.online` no longer points at the game API.~~ **Resolved the other way, and the
+   backlog entry this replaced had it backwards.** `worlds-api.<apex>` was RETIRED and folded INTO
+   `api.<apex>` rather than the API being renamed away from it — `api.cloudsforge.online/v1/titles`
+   answers `200` today, and `worlds-api.cloudsforge.online` has no public DNS record at all. So
+   there is no rename pending and no deprecation cycle to pay for.
 4. The developer platform can issue a credential. Until it can, the only usable credential is one
    an operator hands over by other means, and `clientCredentials` has no default token endpoint.
 5. Every CI job is green on `main`, including secret hygiene.

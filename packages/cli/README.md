@@ -5,6 +5,7 @@ The CloudsForge public API, from a shell. Built on [`@cloudsforge/sdk`](../sdk).
 ```bash
 pnpm add -g @cloudsforge/cli
 export CLOUDSFORGE_BASE_URL=https://api.cloudsforge.online
+# …or https://api-testnet.cloudsforge.online for testnet
 export CLOUDSFORGE_API_KEY=…
 
 cloudsforge listings
