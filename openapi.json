@@ -59,7 +59,7 @@
       "get": {
         "operationId": "pricing.rates",
         "summary": "GET /v1/rates",
-        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts:312`.",
+        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts`.",
         "tags": [
           "pricing"
         ],
@@ -78,7 +78,7 @@
       "get": {
         "operationId": "pricing.rate",
         "summary": "GET /v1/rates/:asset",
-        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts:321`.",
+        "description": "Owned by `pricing`. Verified against `pricing/src/server.ts`.",
         "tags": [
           "pricing"
         ],
@@ -107,7 +107,7 @@
       "get": {
         "operationId": "wallet.list",
         "summary": "GET /v1/wallets",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:440`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -131,7 +131,7 @@
       "post": {
         "operationId": "wallet.register",
         "summary": "POST /v1/wallets",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:463`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -157,7 +157,7 @@
       "get": {
         "operationId": "wallet.get",
         "summary": "GET /v1/wallets/:id",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:501`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -191,7 +191,7 @@
       "patch": {
         "operationId": "wallet.update",
         "summary": "PATCH /v1/wallets/:id",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:510`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -227,7 +227,7 @@
       "post": {
         "operationId": "wallet.verify",
         "summary": "POST /v1/wallets/verify",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:528`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -253,7 +253,7 @@
       "post": {
         "operationId": "wallet.grantAuthorisation",
         "summary": "POST /v1/wallets/:id/authorisations",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:557`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -289,7 +289,7 @@
       "delete": {
         "operationId": "wallet.revokeAuthorisation",
         "summary": "DELETE /v1/wallets/:id/authorisations/:authorisation",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:578`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -333,7 +333,7 @@
       "post": {
         "operationId": "deposits.assign",
         "summary": "POST /v1/deposits",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:604`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -357,7 +357,7 @@
       "get": {
         "operationId": "deposits.list",
         "summary": "GET /v1/deposits",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:624`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -383,7 +383,7 @@
       "get": {
         "operationId": "deposits.credits",
         "summary": "GET /v1/deposits/credits",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:631`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -409,7 +409,7 @@
       "post": {
         "operationId": "withdrawals.request",
         "summary": "POST /v1/withdrawals",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:645`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -444,7 +444,7 @@
       "get": {
         "operationId": "withdrawals.list",
         "summary": "GET /v1/withdrawals",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:685`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -470,7 +470,7 @@
       "get": {
         "operationId": "withdrawals.get",
         "summary": "GET /v1/withdrawals/:id",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:697`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -506,7 +506,7 @@
       "post": {
         "operationId": "money.spend",
         "summary": "POST /v1/spend",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:707`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -543,7 +543,7 @@
       "post": {
         "operationId": "money.transfer",
         "summary": "POST /v1/transfers",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:734`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -580,7 +580,7 @@
       "post": {
         "operationId": "money.convert",
         "summary": "POST /v1/conversions",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:761`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -617,7 +617,7 @@
       "get": {
         "operationId": "portfolio.get",
         "summary": "GET /v1/portfolio",
-        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts:790`.",
+        "description": "Owned by `wallet`. Verified against `wallet/src/server.ts`.",
         "tags": [
           "wallet"
         ],
@@ -643,7 +643,7 @@
       "get": {
         "operationId": "market.collections",
         "summary": "GET /v1/collections",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:596`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -660,7 +660,7 @@
       "post": {
         "operationId": "market.createCollection",
         "summary": "POST /v1/collections",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:602`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -686,7 +686,7 @@
       "get": {
         "operationId": "market.listings",
         "summary": "GET /v1/listings",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:618`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -703,7 +703,7 @@
       "post": {
         "operationId": "market.createListing",
         "summary": "POST /v1/listings",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:651`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -740,7 +740,7 @@
       "get": {
         "operationId": "market.listing",
         "summary": "GET /v1/listings/:id",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:636`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -767,7 +767,7 @@
       "delete": {
         "operationId": "market.cancelListing",
         "summary": "DELETE /v1/listings/:id",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:776`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -803,7 +803,7 @@
       "post": {
         "operationId": "market.activateListing",
         "summary": "POST /v1/listings/:id/activate",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:742`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -839,7 +839,7 @@
       "get": {
         "operationId": "market.risk",
         "summary": "GET /v1/listings/:id/risk",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:790`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -868,7 +868,7 @@
       "post": {
         "operationId": "market.buy",
         "summary": "POST /v1/listings/:id/buy",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:818`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -913,7 +913,7 @@
       "get": {
         "operationId": "market.bids",
         "summary": "GET /v1/listings/:id/bids",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:846`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -940,7 +940,7 @@
       "post": {
         "operationId": "market.placeBid",
         "summary": "POST /v1/listings/:id/bids",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:863`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -985,7 +985,7 @@
       "get": {
         "operationId": "market.offers",
         "summary": "GET /v1/listings/:id/offers",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:893`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1012,7 +1012,7 @@
       "post": {
         "operationId": "market.makeOffer",
         "summary": "POST /v1/listings/:id/offers",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:898`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1057,7 +1057,7 @@
       "delete": {
         "operationId": "market.withdrawOffer",
         "summary": "DELETE /v1/offers/:id",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:917`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1093,7 +1093,7 @@
       "post": {
         "operationId": "market.acceptOffer",
         "summary": "POST /v1/offers/:id/accept",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:931`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1138,7 +1138,7 @@
       "get": {
         "operationId": "market.orders",
         "summary": "GET /v1/orders",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:969`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1164,7 +1164,7 @@
       "get": {
         "operationId": "market.order",
         "summary": "GET /v1/orders/:id",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:980`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1200,7 +1200,7 @@
       "post": {
         "operationId": "market.openDispute",
         "summary": "POST /v1/orders/:id/disputes",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:993`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1236,7 +1236,7 @@
       "get": {
         "operationId": "market.verification",
         "summary": "GET /v1/verifications/:urn",
-        "description": "Owned by `market`. Verified against `market/src/server.ts:1091`.",
+        "description": "Owned by `market`. Verified against `market/src/server.ts`.",
         "tags": [
           "market"
         ],
@@ -1265,7 +1265,7 @@
       "get": {
         "operationId": "mint.catalogue",
         "summary": "GET /v1/catalogue",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:354`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1284,7 +1284,7 @@
       "post": {
         "operationId": "mint.createToken",
         "summary": "POST /v1/tokens",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:373`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1308,7 +1308,7 @@
       "get": {
         "operationId": "mint.tokens",
         "summary": "GET /v1/tokens",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:441`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1334,7 +1334,7 @@
       "get": {
         "operationId": "mint.token",
         "summary": "GET /v1/tokens/:id",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:454`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1370,7 +1370,7 @@
       "post": {
         "operationId": "mint.pay",
         "summary": "POST /v1/tokens/:id/pay",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:478`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1406,7 +1406,7 @@
       "post": {
         "operationId": "mint.deploy",
         "summary": "POST /v1/tokens/:id/deploy",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:515`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1442,7 +1442,7 @@
       "put": {
         "operationId": "mint.putPage",
         "summary": "PUT /v1/tokens/:id/page",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:570`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1476,7 +1476,7 @@
       "get": {
         "operationId": "mint.page",
         "summary": "GET /v1/tokens/:id/page",
-        "description": "Owned by `mint`. Verified against `mint/src/server.ts:596`.",
+        "description": "Owned by `mint`. Verified against `mint/src/server.ts`.",
         "tags": [
           "mint"
         ],
@@ -1505,7 +1505,7 @@
       "get": {
         "operationId": "foresight.categories",
         "summary": "GET /v1/categories",
-        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:398`.",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts`.",
         "tags": [
           "foresight"
         ],
@@ -1524,7 +1524,7 @@
       "get": {
         "operationId": "foresight.markets",
         "summary": "GET /v1/markets",
-        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:409`.",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts`.",
         "tags": [
           "foresight"
         ],
@@ -1543,7 +1543,7 @@
       "get": {
         "operationId": "foresight.market",
         "summary": "GET /v1/markets/:id",
-        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:424`.",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts`.",
         "tags": [
           "foresight"
         ],
@@ -1572,7 +1572,7 @@
       "get": {
         "operationId": "foresight.position",
         "summary": "GET /v1/markets/:id/positions/:address",
-        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:455`.",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts`.",
         "tags": [
           "foresight"
         ],
@@ -1609,7 +1609,7 @@
       "post": {
         "operationId": "foresight.stakeIntent",
         "summary": "POST /v1/markets/:id/stake-intent",
-        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts:490`.",
+        "description": "Owned by `foresight`. Verified against `foresight/src/server.ts`.",
         "tags": [
           "foresight"
         ],
@@ -1645,7 +1645,7 @@
       "get": {
         "operationId": "worlds.titles",
         "summary": "GET /v1/titles",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:467`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1664,7 +1664,7 @@
       "get": {
         "operationId": "worlds.player",
         "summary": "GET /v1/players/me",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:524`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1688,7 +1688,7 @@
       "put": {
         "operationId": "worlds.updatePlayer",
         "summary": "PUT /v1/players/me",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:551`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1714,7 +1714,7 @@
       "put": {
         "operationId": "worlds.equip",
         "summary": "PUT /v1/players/me/cosmetics",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:576`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1740,7 +1740,7 @@
       "get": {
         "operationId": "worlds.inventory",
         "summary": "GET /v1/players/me/inventory",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:598`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1766,7 +1766,7 @@
       "post": {
         "operationId": "worlds.listItem",
         "summary": "POST /v1/players/me/inventory/:id/list",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:617`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1800,7 +1800,7 @@
       "delete": {
         "operationId": "worlds.unlistItem",
         "summary": "DELETE /v1/players/me/inventory/:id/list",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:631`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1836,7 +1836,7 @@
       "get": {
         "operationId": "worlds.provisions",
         "summary": "GET /v1/provisions",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:642`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1862,7 +1862,7 @@
       "get": {
         "operationId": "worlds.provision",
         "summary": "GET /v1/provisions/:id",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:683`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1898,7 +1898,7 @@
       "get": {
         "operationId": "worlds.achievements",
         "summary": "GET /v1/titles/:id/achievements",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:701`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1927,7 +1927,7 @@
       "get": {
         "operationId": "worlds.seasons",
         "summary": "GET /v1/titles/:id/seasons",
-        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts:755`.",
+        "description": "Owned by `worlds`. Verified against `worlds/src/server.ts`.",
         "tags": [
           "worlds"
         ],
@@ -1956,7 +1956,7 @@
       "get": {
         "operationId": "activity.feed",
         "summary": "GET /v1/feed",
-        "description": "Owned by `activity`. Verified against `activity/src/server.ts:318`.",
+        "description": "Owned by `activity`. Verified against `activity/src/server.ts`.",
         "tags": [
           "activity"
         ],
@@ -1982,7 +1982,7 @@
       "get": {
         "operationId": "activity.record",
         "summary": "GET /v1/feed/:id",
-        "description": "Owned by `activity`. Verified against `activity/src/server.ts:351`.",
+        "description": "Owned by `activity`. Verified against `activity/src/server.ts`.",
         "tags": [
           "activity"
         ],
@@ -2018,7 +2018,7 @@
       "get": {
         "operationId": "identity.me",
         "summary": "GET /v1/auth/me",
-        "description": "Owned by `identity`. Verified against `identity/src/server.ts:891`.",
+        "description": "Owned by `identity`. Verified against `identity/src/server.ts`.",
         "tags": [
           "identity"
         ],
