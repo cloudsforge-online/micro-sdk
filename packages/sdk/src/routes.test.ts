@@ -54,7 +54,7 @@ test('no route reaches an operator, admin or internal surface', () => {
 
 test('no route touches the ledger', () => {
   // Every ledger route requires a SERVICE token — `authorise` refuses a user principal outright at
-  // ledger/src/server.ts:575. A third party can never reach one, so offering a method for it would
+  // ledger/src/server.ts. A third party can never reach one, so offering a method for it would
   // ship a guaranteed 403. The README says so under "what the API does not offer".
   for (const name of ROUTE_NAMES) {
     assert.notEqual((ROUTES[name] as { service: string }).service, 'ledger')

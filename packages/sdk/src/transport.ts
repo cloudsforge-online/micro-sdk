@@ -11,7 +11,7 @@
  *      attempt, so `deadlineMs` is a real ceiling on wall-clock time rather than a per-hop one
  *      that a three-hop call multiplies by three.
  *
- * And a third that `HttpError.peerDecided` (`runtime/packages/http/src/index.ts:49`) encodes:
+ * And a third that `HttpError.peerDecided` (`runtime/packages/http/src/index.ts`) encodes:
  * **a 4xx is never retried.** The peer decided; asking again produces the same answer and spends
  * the budget the caller might have wanted for something that could succeed. The exceptions are the
  * four 4xx codes that mean "later", not "no" — 408, 425, 429 and, with a `Retry-After`, nothing
@@ -176,7 +176,7 @@ export class Transport {
    *
    * The generic is the caller's claim about the response shape, not a validated one. The SDK does
    * not schema-check responses: the public API is additive-only by policy
-   * (`docs/ecosystem/11-data-and-contract-strategy.md:307`), and a client that rejected an
+   * (`docs/ecosystem/11-data-and-contract-strategy.md`), and a client that rejected an
    * unrecognised field would turn every additive change into an outage for anyone who had not
    * upgraded. Unknown fields pass through.
    */
@@ -271,7 +271,7 @@ export class Transport {
     // `AbortSignal.any` rather than a manual listener: a caller signal that is ALREADY aborted when
     // the attempt begins must still abort the request, and a listener registered on an aborted
     // signal never fires. That left the request hanging until its own deadline in the internal
-    // client, which is the bug its comment at index.ts:300 records.
+    // client, which is the bug its comment at index.ts records.
     const timeoutSignal = AbortSignal.timeout(Math.max(1, Math.floor(remainingMs)))
     const signal = options.signal ? AbortSignal.any([options.signal, timeoutSignal]) : timeoutSignal
     if (options.signal?.aborted) throw options.signal.reason ?? new Error('aborted')

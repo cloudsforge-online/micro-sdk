@@ -3,14 +3,14 @@
  *
  * ## The defect this file exists to not repeat
  *
- * `ledger/src/idempotency.test.ts:5` — "a retry with a fresh correlation id is a replay, not a
+ * `ledger/src/idempotency.test.ts` — "a retry with a fresh correlation id is a replay, not a
  * 409". Its comment names where it came from: a correlation id is a trace identifier and is
  * *supposed* to change on every attempt, because that is what makes a retry distinguishable in a
  * trace. Include it in the fingerprint and a caller doing exactly the right thing is told its
  * idempotency key was reused with a different payload. `micro-wallet` had to carry a correlation
  * id that was stable per operation rather than per attempt to work around it.
  *
- * The service fixed that on its side (`PER_ATTEMPT_FIELDS` at `ledger/src/idempotency.ts:74`).
+ * The service fixed that on its side (`PER_ATTEMPT_FIELDS` at `ledger/src/idempotency.ts`).
  * This file is the client half, and it has to make the same exclusion for a different reason:
  * `autoKey` derives a key from the request body, so a body field that changes per attempt would
  * derive a DIFFERENT key on the retry — and a different key is not a retry at all, it is a second
@@ -31,7 +31,7 @@ import { UsageError } from './errors.ts'
 /**
  * Fields that legitimately differ between attempts at the *same* operation.
  *
- * Mirrors `ledger/src/idempotency.ts:74`. `correlationId` is the sharp one and the reason the set
+ * Mirrors `ledger/src/idempotency.ts`. `correlationId` is the sharp one and the reason the set
  * exists; `idempotencyKey` is here because a body that already carries the key must not have the
  * key feed back into deriving it.
  */
@@ -41,7 +41,7 @@ export const PER_ATTEMPT_FIELDS: readonly string[] = Object.freeze([
 ])
 
 /**
- * `market/src/server.ts:1138` refuses anything outside 8..200 characters with a 400. Matching the
+ * `market/src/server.ts` refuses anything outside 8..200 characters with a 400. Matching the
  * bound here turns a round trip into a local throw with a message that says what to do.
  */
 const MIN_KEY_LENGTH = 8
@@ -68,7 +68,7 @@ export function newKey(): string {
  * A key derived from the operation, stable across every attempt at it.
  *
  * `route` is in the digest so the same body sent to two routes cannot collide, which matters
- * because the service namespaces stored keys by route as well (`ledger/src/idempotency.ts:106`)
+ * because the service namespaces stored keys by route as well (`ledger/src/idempotency.ts`)
  * and a client that did not would be relying on that.
  */
 export function deriveKey(route: string, body: unknown): string {
@@ -85,7 +85,7 @@ export function deriveKey(route: string, body: unknown): string {
  * identical bodies that serialised their fields in a different order would fingerprint differently
  * and a legitimate retry would be rejected as reuse — a class of false 409 that is maddening to
  * diagnose from the caller's side. Same reasoning, same implementation as
- * `ledger/src/idempotency.ts:88`.
+ * `ledger/src/idempotency.ts`.
  */
 export function requestFingerprint(body: unknown): string {
   return createHash('sha256').update(canonicalise(strip(body))).digest('hex')

@@ -3,7 +3,7 @@
  *
  * ## Amounts are `bigint` here and decimal strings on the wire
  *
- * Every service serialises money as a decimal string — `listingWire` at `market/src/server.ts:1170`
+ * Every service serialises money as a decimal string — `listingWire` at `market/src/server.ts`
  * says why in one line: "Every amount a decimal STRING. A JSON number is an IEEE 754 double." The
  * SDK converts on the way in, so a caller never sees a money field typed `string` and never has to
  * remember which of the twenty fields on an order is one. `decode.ts` does the conversion; the
@@ -13,7 +13,7 @@
  *
  * The decoders spread the raw object and overwrite the money fields. A field the platform adds
  * tomorrow reaches a caller who has not upgraded, which is what
- * `docs/ecosystem/11-data-and-contract-strategy.md:307` promises — "additive changes need no
+ * `docs/ecosystem/11-data-and-contract-strategy.md` promises — "additive changes need no
  * version" — and it only holds if the client does not strip what it does not recognise.
  *
  * ## The types are narrower than the wire in one direction only
@@ -21,7 +21,7 @@
  * Where a service returns a field this SDK has no business exposing, the field is absent from the
  * type and present at runtime. Nothing is removed. The one thing worth knowing is what is NOT on
  * the wire at all: `market`'s listing reserve price is withheld by the service
- * (`market/src/server.ts:1175`), because publishing a seller's secret floor is the same as not
+ * (`market/src/server.ts`), because publishing a seller's secret floor is the same as not
  * having one.
  */
 
@@ -29,7 +29,7 @@ import type { AssetCode, Network } from './chain.ts'
 
 /* ------------------------------------------------------------------ shared */
 
-/** A page. Callers page until `nextCursor` is null, never by counting — `wallet/src/wallets.ts:301`. */
+/** A page. Callers page until `nextCursor` is null, never by counting — `wallet/src/wallets.ts`. */
 export interface Page<T> {
   readonly items: readonly T[]
   readonly nextCursor: string | null
@@ -37,7 +37,7 @@ export interface Page<T> {
 
 /* ------------------------------------------------------------------ pricing */
 
-/** `pricing/src/quotes.ts:360`. Every `*Scaled` field is an integer at `RATE_SCALE`. */
+/** `pricing/src/quotes.ts`. Every `*Scaled` field is an integer at `RATE_SCALE`. */
 export interface Rate {
   readonly asset: AssetCode
   readonly source: string
@@ -77,7 +77,7 @@ export interface RateBoard {
 export type WalletOrigin = 'managed' | 'external' | 'watch'
 
 /**
- * `wallet/src/wallets.ts:45`. Each terminal is terminal for a different reason:
+ * `wallet/src/wallets.ts`. Each terminal is terminal for a different reason:
  * `exported` means the user holds the private key and is irreversible; `frozen` cannot send but
  * can still receive, and is reversible.
  */
@@ -89,7 +89,7 @@ export type WalletStatus =
   | 'retiring'
   | 'retired'
 
-/** `wallet/src/wallets.ts:96`. No amounts: a wallet record carries no balance. */
+/** `wallet/src/wallets.ts`. No amounts: a wallet record carries no balance. */
 export interface Wallet {
   readonly id: string
   readonly userId: string
@@ -108,7 +108,7 @@ export interface Wallet {
   readonly retiredAt: string | null
 }
 
-/** `wallet/src/links.ts:63`. What a linked external wallet is permitted to be used for. */
+/** `wallet/src/links.ts`. What a linked external wallet is permitted to be used for. */
 export type WalletAuthorisation = string
 
 export interface WalletLink {
@@ -133,7 +133,7 @@ export interface Valuation {
   readonly source: string
 }
 
-/** `wallet/src/portfolio.ts:68`. */
+/** `wallet/src/portfolio.ts`. */
 export interface PortfolioBalance {
   readonly assetCode: AssetCode
   readonly purpose: string
@@ -145,7 +145,7 @@ export interface PortfolioBalance {
 }
 
 /**
- * `wallet/src/portfolio.ts:77`.
+ * `wallet/src/portfolio.ts`.
  *
  * `balance` is ALWAYS null and that is not an omission: the indexer exposes no balance read, and a
  * `balance` field containing something that is not the balance would be rendered as one.
@@ -170,7 +170,7 @@ export interface ObservedWallet {
   readonly observedAt: string
 }
 
-/** `wallet/src/portfolio.ts:105`. */
+/** `wallet/src/portfolio.ts`. */
 export interface Portfolio {
   readonly subject: string
   readonly network: Network
@@ -186,7 +186,7 @@ export interface Portfolio {
   readonly asOf: string
 }
 
-/** `wallet/src/deposits.ts:76`. */
+/** `wallet/src/deposits.ts`. */
 export interface DepositAssignment {
   readonly id: string
   readonly userId: string
@@ -204,7 +204,7 @@ export interface DepositAssignment {
   readonly watchedAt: string | null
 }
 
-/** `wallet/src/deposits.ts:688`. */
+/** `wallet/src/deposits.ts`. */
 export interface DepositCredit {
   readonly id: string
   readonly assetCode: string
@@ -220,7 +220,7 @@ export interface DepositCredit {
 }
 
 /**
- * `wallet/src/withdrawals.ts:73`.
+ * `wallet/src/withdrawals.ts`.
  *
  * `stuck` is NOT terminal, and that is the important entry: a stuck withdrawal holds a reservation
  * against a user who has been debited, and it must be able to become `settled` or `failed`.
@@ -236,7 +236,7 @@ export type WithdrawalState =
   | 'refunded'
   | 'cancelled'
 
-/** `wallet/src/withdrawals.ts:114`. */
+/** `wallet/src/withdrawals.ts`. */
 export interface Withdrawal {
   readonly id: string
   readonly userId: string
@@ -259,11 +259,11 @@ export interface Withdrawal {
 }
 
 /**
- * `wallet/src/money.ts:112`.
+ * `wallet/src/money.ts`.
  *
  * `replayed` is the field to branch on. The service answers 201 on a fresh posting and 200 on a
  * replay so a client can tell "I did this" from "this was already done" without comparing bodies
- * (`wallet/src/server.ts:674`), and this carries the same fact into the body.
+ * (`wallet/src/server.ts`), and this carries the same fact into the body.
  */
 export interface MoneyResult {
   readonly entryId: string
@@ -278,7 +278,7 @@ export type AssetKind = string
 export type PricingMode = string
 export type SettlementMode = string
 
-/** `market/src/server.ts:1163`. The reserve price is deliberately absent — it is the seller's. */
+/** `market/src/server.ts`. The reserve price is deliberately absent — it is the seller's. */
 export interface Listing {
   readonly id: string
   readonly sellerSubject: string
@@ -306,7 +306,7 @@ export interface RoyaltyShare {
   readonly amount: bigint
 }
 
-/** `market/src/server.ts:1190`. */
+/** `market/src/server.ts`. */
 export interface Order {
   readonly id: string
   readonly listingId: string
@@ -329,7 +329,7 @@ export interface Order {
   readonly royalties: readonly RoyaltyShare[]
 }
 
-/** `market/src/server.ts:851`. */
+/** `market/src/server.ts`. */
 export interface Bid {
   readonly id: string
   readonly bidderSubject: string
@@ -339,7 +339,7 @@ export interface Bid {
   readonly placedAt: string
 }
 
-/** `market/src/server.ts:1217`. */
+/** `market/src/server.ts`. */
 export interface Offer {
   readonly id: string
   readonly listingId: string
@@ -351,7 +351,7 @@ export interface Offer {
   readonly createdAt: string
 }
 
-/** `market/src/server.ts:1239`. */
+/** `market/src/server.ts`. */
 export interface Dispute {
   readonly id: string
   readonly orderId: string
@@ -371,7 +371,7 @@ export interface Collection {
 }
 
 /**
- * `market/src/server.ts:790`.
+ * `market/src/server.ts`.
  *
  * `indicatorsAvailable` is said explicitly rather than inferred from an empty array, and a client
  * must honour that: "we have no indicators" and "we could not fetch them" must not look the same,
@@ -385,7 +385,7 @@ export interface ListingRisk {
 
 /* ------------------------------------------------------------------ mint */
 
-/** `mint/src/server.ts:641`. */
+/** `mint/src/server.ts`. */
 export interface Token {
   readonly id: string
   readonly ownerSubject: string
@@ -433,7 +433,7 @@ export interface MintCatalogue {
   }[]
 }
 
-/** `mint/src/server.ts:556`. The deploy leaves the request here; poll `statusUrl`. */
+/** `mint/src/server.ts`. The deploy leaves the request here; poll `statusUrl`. */
 export interface DeployAccepted {
   readonly accepted: true
   readonly tokenId: string
@@ -443,7 +443,7 @@ export interface DeployAccepted {
 
 /* ------------------------------------------------------------------ foresight */
 
-/** `foresight/src/markets.ts:614`. */
+/** `foresight/src/markets.ts`. */
 export interface PredictionMarket {
   readonly id: string
   readonly status: string
@@ -471,7 +471,7 @@ export interface PredictionMarket {
 }
 
 /**
- * `foresight/src/mirror.ts:249`.
+ * `foresight/src/mirror.ts`.
  *
  * `asOf` and `stale` are not optional decoration. This is a MIRROR of on-chain state, and a pool
  * shown without saying when it was last read is a pool a reader will assume is live.
@@ -514,7 +514,7 @@ export interface MarketPosition {
 }
 
 /**
- * `foresight/src/server.ts:490`.
+ * `foresight/src/server.ts`.
  *
  * **Not one wei passes through the platform.** The answer is a contract address and calldata; the
  * user's wallet builds, signs and sends. `value` is deliberately not computed here — the wallet is
@@ -548,7 +548,7 @@ export interface Title {
   readonly assetScopes: readonly string[]
 }
 
-/** `worlds/src/players.ts:52`. */
+/** `worlds/src/players.ts`. */
 export interface PlayerProfile {
   readonly userId: string
   readonly displayName: string
@@ -563,7 +563,7 @@ export interface PlayerProfile {
   readonly updatedAt: string
 }
 
-/** `worlds/src/server.ts:843`. `bound` is on the wire so a client knows before it draws a Sell. */
+/** `worlds/src/server.ts`. `bound` is on the wire so a client knows before it draws a Sell. */
 export interface InventoryItem {
   readonly id: string
   readonly titleScope: string
@@ -602,7 +602,7 @@ export interface Player {
 
 /* ------------------------------------------------------------------ activity */
 
-/** `activity/src/categories.ts:31`. Sixteen, and `unclassified` is not one of them. */
+/** `activity/src/categories.ts`. Sixteen, and `unclassified` is not one of them. */
 export type ActivityCategory =
   | 'account'
   | 'security'
@@ -621,7 +621,7 @@ export type ActivityCategory =
   | 'api'
   | 'billing'
 
-/** `activity/src/server.ts:481`. */
+/** `activity/src/server.ts`. */
 export interface ActivityRecord {
   readonly id: string
   readonly userId: string | null
@@ -643,7 +643,7 @@ export interface ActivityRecord {
 
 /* ------------------------------------------------------------------ identity */
 
-/** `contracts/packages/auth/src/index.ts:72`, produced by `identity/src/users.ts:52`. */
+/** `contracts/packages/auth/src/index.ts`, produced by `identity/src/users.ts`. */
 export interface PublicUser {
   readonly id: string
   readonly email: string

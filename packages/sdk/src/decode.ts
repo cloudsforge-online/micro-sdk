@@ -6,7 +6,7 @@
  *     { ...raw, amount: toAmount(raw.amount) }
  *
  * The spread is load-bearing. A field the platform adds tomorrow reaches a caller who has not
- * upgraded — which is the promise `docs/ecosystem/11-data-and-contract-strategy.md:307` makes
+ * upgraded — which is the promise `docs/ecosystem/11-data-and-contract-strategy.md` makes
  * ("additive changes need no version") and which only holds if the client does not strip what it
  * does not recognise. A decoder that constructed a fresh object field by field would quietly
  * discard every additive change, and the caller would have no way to tell.

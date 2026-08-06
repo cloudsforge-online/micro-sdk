@@ -195,7 +195,7 @@ jobs:
     name: Public exports evolve additively
     # THE FIRST PUSH TO A NEW REPOSITORY CANNOT RUN THIS, and skipping it deliberately beats a red
     # run that means nothing. `github.event.before` is forty zeroes when a branch is created, the
-    # checker resolves the base ref with `git ls-tree` (micro-org/tools/compat.ts:492), and
+    # checker resolves the base ref with `git ls-tree` (micro-org/tools/compat.ts), and
     # `ls-tree` against a nonexistent object exits non-zero — so the job would fail on the one push
     # where there is provably nothing to compare against. Every subsequent push, and every pull
     # request, runs it.

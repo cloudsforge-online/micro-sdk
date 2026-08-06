@@ -165,7 +165,7 @@ the route is registered. Nothing else in the SDK constructs a path.
 import { ROUTES, ROUTE_NAMES } from '@cloudsforge/sdk'
 ROUTES['market.listings']
 // { method: 'GET', path: '/v1/listings', service: 'market', auth: 'none',
-//   idempotency: 'none', verifiedAt: 'market/src/server.ts:618' }
+//   idempotency: 'none', verifiedAt: 'market/src/server.ts' }
 ```
 
 Or from the CLI: `cloudsforge routes`.
@@ -242,7 +242,7 @@ Two things worth knowing about that host:
   `404` — a known defect being corrected to `404`, not a sign the API is down. Every `/v1` route
   works.
 - **`api.<apex>` serves no HTML.** It is `servesUi: false` in
-  `ui/packages/ui/src/surfaces.ts:767`; do not link a person to it.
+  `ui/packages/ui/src/surfaces.ts`; do not link a person to it.
 
 For testnet, use `https://api-testnet.cloudsforge.online` — testnet hostnames are single-label
 `<surface>-testnet.cloudsforge.online`, never `<surface>.testnet.cloudsforge.online`.

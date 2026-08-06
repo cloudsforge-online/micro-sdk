@@ -32,7 +32,7 @@ export interface ApiErrorBody {
 /**
  * The peer answered, and the answer was not a success.
  *
- * `peerDecided` is `runtime/packages/http`'s rule, kept verbatim (`index.ts:49`): 4xx means the
+ * `peerDecided` is `runtime/packages/http`'s rule, kept verbatim (`index.ts`): 4xx means the
  * peer decided and the same request will get the same answer, 5xx means we do not know. It is the
  * predicate the retry loop consults, and it is public because callers want it too — "should I show
  * this to the user or retry it myself" is the same question.

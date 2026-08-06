@@ -3,7 +3,7 @@
  *
  * ## The seam, and why it is a seam rather than an implementation
  *
- * `docs/ecosystem/11-data-and-contract-strategy.md:286` says the public API is authenticated by "a
+ * `docs/ecosystem/11-data-and-contract-strategy.md` says the public API is authenticated by "a
  * devplatform-issued key or OAuth client with scopes". `cloudsforge-devplatform` does not exist —
  * it is item DEV-01 in the backlog and the thing P11 is waiting on. So there is no token endpoint
  * to POST to, no key format to validate, and no scope vocabulary to enumerate.
@@ -38,7 +38,7 @@ import { AuthError } from './errors.ts'
  * Anything that can produce a bearer token.
  *
  * Async because a short-lived token must be refreshable without the caller rebuilding the client —
- * the same reason `runtime/packages/http`'s `token` option is async (`index.ts:101`).
+ * the same reason `runtime/packages/http`'s `token` option is async (`index.ts`).
  */
 export interface Credential {
   /** A short label for diagnostics. Never the secret. */

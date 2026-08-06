@@ -162,7 +162,7 @@ const TABLE = {
     verifiedAt: 'wallet/src/server.ts:631',
   },
 
-  // `requireIdempotencyKey('POST /v1/withdrawals', …)` at wallet/src/server.ts:649.
+  // `requireIdempotencyKey('POST /v1/withdrawals', …)` at wallet/src/server.ts.
   'withdrawals.request': {
     method: 'POST',
     path: '/v1/withdrawals',
@@ -188,7 +188,7 @@ const TABLE = {
     verifiedAt: 'wallet/src/server.ts:697',
   },
 
-  // wallet/src/server.ts:712 — "**The line this whole service exists to add.** forge-pay's /spend
+  // wallet/src/server.ts — "**The line this whole service exists to add.** forge-pay's /spend
   // accepts a missing key." The SDK does not offer a way to omit it.
   'money.spend': {
     method: 'POST',
@@ -260,7 +260,7 @@ const TABLE = {
     idempotency: 'none',
     verifiedAt: 'market/src/server.ts:636',
   },
-  // `withIdempotentRoute` at market/src/server.ts:682 — 400 without the header.
+  // `withIdempotentRoute` at market/src/server.ts — 400 without the header.
   'market.createListing': {
     method: 'POST',
     path: '/v1/listings',
@@ -604,7 +604,7 @@ const TABLE = {
 
   /* ------------------------------------------------------------------ identity */
 
-  // `authenticateUser` refuses a service principal outright — identity/src/server.ts:540. An API
+  // `authenticateUser` refuses a service principal outright — identity/src/server.ts. An API
   // key is not a user, so this is the one route in the SDK a machine credential cannot call, and
   // `auth: 'user'` is how the SDK says so before the 403 does.
   'identity.me': {
@@ -621,7 +621,7 @@ const TABLE = {
  * `verifiedAt` is widened to `string` on the way out, and this is not a detail.
  *
  * `as const` makes every field a literal TYPE, `verifiedAt` included — so
- * `ROUTES.mint.pay.verifiedAt` was the type `'mint/src/server.ts:454'`, and the estate's
+ * `ROUTES.mint.pay.verifiedAt` was the type `'mint/src/server.ts'`, and the estate's
  * additive-only checker (`micro-org/tools/compat.ts`) reads a changed scalar text as a **breaking
  * change to a public contract**. It is right about scalars in general and wrong about this field:
  * a citation is provenance. Correcting one after a service's routes move down twenty-four lines is
@@ -647,7 +647,7 @@ export const ROUTE_NAMES = Object.keys(ROUTES) as readonly RouteName[]
  * Fill `:name` segments, percent-encoding each value.
  *
  * Encoding matters more than it looks. A market verification is keyed by a URN — `cf:market:…` —
- * and an unencoded colon in a path segment is a different path. `market/src/server.ts:1093`
+ * and an unencoded colon in a path segment is a different path. `market/src/server.ts`
  * decodes it on the way in, so it must be encoded on the way out.
  */
 export function fillPath(path: string, params: Readonly<Record<string, string>> = {}): string {

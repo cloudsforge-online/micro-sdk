@@ -5,7 +5,7 @@
  *
  * 1. **An amount is a `bigint` in the smallest unit.** Never a `number`. An 18-decimal EMBER
  *    balance passes 2^53 at 0.009 EMBER, and a JS number silently stops being the value the caller
- *    meant somewhere around there. `wallet/src/server.ts:995` refuses a JSON number that is not
+ *    meant somewhere around there. `wallet/src/server.ts` refuses a JSON number that is not
  *    already a safe integer for exactly this reason, and says so in the error.
  * 2. **It crosses the wire as a decimal string.** `JSON.stringify` throws on a bigint, so the
  *    conversion is not optional; doing it in one place is what stops it being done differently in
@@ -24,7 +24,7 @@ const AMOUNT = /^\d+$/
  * Parse a smallest-unit amount off the wire.
  *
  * Accepts a string, and a `number` ONLY when it is already a safe integer — mirroring
- * `requireAmount` at `wallet/src/server.ts:1003`. Beyond that the value has already lost precision
+ * `requireAmount` at `wallet/src/server.ts`. Beyond that the value has already lost precision
  * before this code ran, and the honest answer is to refuse it rather than act on a number that is
  * quietly not the one the server sent.
  */

@@ -11,7 +11,7 @@
  * ## What it does not do
  *
  * - **It does not validate response shapes.** Additive change is the public API's promise
- *   (`11-data-and-contract-strategy.md:307`); a client that rejected an unrecognised field would
+ *   (`11-data-and-contract-strategy.md`); a client that rejected an unrecognised field would
  *   turn every additive change into an outage for everyone who had not upgraded.
  * - **It does not paginate for you.** Every paged read returns the page and its cursor. An
  *   auto-paginating iterator hides how many requests it made, which is the number a developer is
@@ -109,7 +109,7 @@ export interface RegisterWalletRequest {
   /**
    * `external` issues a challenge to sign; `watch` does not.
    *
-   * `managed` is refused by the service (`wallet/src/server.ts:472`) and is therefore not in this
+   * `managed` is refused by the service (`wallet/src/server.ts`) and is therefore not in this
    * type: a managed wallet is created only by the deposit-assignment path, which is the one place a
    * custody key is minted.
    */
@@ -259,7 +259,7 @@ class PricingResource extends Resource {
    * The whole rate board, including assets that are NOT usable.
    *
    * An unusable asset is listed with its reason rather than omitted, deliberately
-   * (`pricing/src/server.ts:307`): omitting it makes a client that iterates the board silently
+   * (`pricing/src/server.ts`): omitting it makes a client that iterates the board silently
    * forget the asset exists, which is how a deposit page loses a coin. Check `rate.usable` before
    * you use `rate.usdScaled`; it is `null` when it is not.
    */
@@ -311,7 +311,7 @@ class WalletsResource extends Resource {
 
   /**
    * Revoke one authorisation, or pass `'all'` to disconnect the wallet entirely — every
-   * authorisation and the link itself, in one transaction (`wallet/src/server.ts:586`).
+   * authorisation and the link itself, in one transaction (`wallet/src/server.ts`).
    */
   async revokeAuthorisation(id: string, authorisation: string | 'all', options: Options = {}): Promise<{ link: WalletLink }> {
     return this.call('wallet.revokeAuthorisation', { ...options, params: { id, authorisation } })
@@ -396,7 +396,7 @@ class WithdrawalsResource extends Resource {
 
 /**
  * The three mutating money routes. Every one of them REQUIRES an idempotency key, and the SDK
- * offers no way to omit it — `wallet/src/server.ts:711` calls that the line the service exists to
+ * offers no way to omit it — `wallet/src/server.ts` calls that the line the service exists to
  * add, because forge-pay's `/spend` accepted a missing key and a retry debited twice.
  */
 class MoneyResource extends Resource {
@@ -655,7 +655,7 @@ class MintResource extends Resource {
    * Public. The project page.
    *
    * Supply and authorities on it come from the INDEXER, not from the order record — the difference
-   * between a fact and a claim (`mint/src/server.ts:589`).
+   * between a fact and a claim (`mint/src/server.ts`).
    */
   async page(id: string, options: Options = {}): Promise<Raw> {
     return this.call('mint.page', { ...options, params: { id } })
@@ -814,7 +814,7 @@ class IdentityResource extends Resource {
   /**
    * Who this token belongs to.
    *
-   * **Requires a USER token.** `identity/src/server.ts:540` refuses a service principal outright,
+   * **Requires a USER token.** `identity/src/server.ts` refuses a service principal outright,
    * so an API key or a client-credentials token gets 403 here, not 401 — the credential was
    * understood and refused. There is no route that answers the same question for a machine
    * credential, and this SDK does not pretend otherwise.

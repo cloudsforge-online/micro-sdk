@@ -54,7 +54,7 @@ test('a null price stays null and does not become zero', () => {
 })
 
 test('an unusable rate decodes with nulls rather than throwing', () => {
-  // pricing/src/server.ts:325 answers 200 with usable:false and every price null. A decoder that
+  // pricing/src/server.ts answers 200 with usable:false and every price null. A decoder that
   // demanded a number there would turn "we have no quote" into a client-side crash.
   const rate = decodeRate({
     asset: 'EMBER',

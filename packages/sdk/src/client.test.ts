@@ -130,7 +130,7 @@ test('the rate board keeps unusable assets, with their reason', async () => {
     }),
   )
   const board = await cf.pricing.rates()
-  // Omitting an unusable asset is how a deposit page loses a coin — pricing/src/server.ts:307.
+  // Omitting an unusable asset is how a deposit page loses a coin — pricing/src/server.ts.
   assert.equal(board.rates.length, 1)
   assert.equal(board.rates[0]?.usable, false)
   assert.equal(board.rates[0]?.reason, 'no administered price set')

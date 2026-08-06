@@ -10,7 +10,7 @@ import {
 } from './idempotency.ts'
 
 test('a retry with a fresh correlation id derives the SAME key, not a second operation', () => {
-  // The client half of ledger/src/idempotency.test.ts:5. A correlation id is a trace identifier
+  // The client half of ledger/src/idempotency.test.ts. A correlation id is a trace identifier
   // and is SUPPOSED to change per attempt. If it fed the derived key, attempt two would carry a
   // different key — and a different key on POST /v1/withdrawals is a second withdrawal.
   const first = { assetCode: 'BTC', amount: '100000', correlationId: 'req-aaa' }
@@ -25,7 +25,7 @@ test('a changed amount derives a DIFFERENT key, so it is not silently replayed',
 })
 
 test('the same body on two routes derives two keys', () => {
-  // The service namespaces stored keys by route (ledger/src/idempotency.ts:106). A client that did
+  // The service namespaces stored keys by route (ledger/src/idempotency.ts). A client that did
   // not would be relying on that to avoid a collision it created itself.
   const body = { amount: '10' }
   assert.notEqual(deriveKey('money.spend', body), deriveKey('money.transfer', body))
@@ -34,7 +34,7 @@ test('the same body on two routes derives two keys', () => {
 test('field order does not change the fingerprint', () => {
   // JSON.stringify preserves insertion order, so an unsorted fingerprint would reject a legitimate
   // retry whose fields happened to serialise differently — a false 409 that is maddening to
-  // diagnose from the caller's side. Same reasoning as ledger/src/idempotency.ts:88.
+  // diagnose from the caller's side. Same reasoning as ledger/src/idempotency.ts.
   assert.equal(
     requestFingerprint({ a: 1, b: { c: 2, d: 3 } }),
     requestFingerprint({ b: { d: 3, c: 2 }, a: 1 }),
@@ -64,7 +64,7 @@ test('every per-attempt field is excluded, and the list matches the ledger’s',
 })
 
 test('a derived key is inside the bound the market service enforces', () => {
-  // market/src/server.ts:1138 answers 400 outside 8..200 characters.
+  // market/src/server.ts answers 400 outside 8..200 characters.
   const key = deriveKey('market.buy', { amount: '1' })
   assert.doesNotThrow(() => assertValidKey(key))
   assert.doesNotThrow(() => assertValidKey(newKey()))
