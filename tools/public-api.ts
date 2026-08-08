@@ -124,6 +124,16 @@ export function publicPath(e: Entry): string {
   return e.path.startsWith('/v1/') ? e.path : `/v1${e.path}`
 }
 
+/**
+ * A `verifiedAt` citation with its line number dropped: `mint/src/server.ts:374` → `mint/src/server.ts`.
+ *
+ * One function rather than an inline `.replace`, so the rule is somewhere a reader can find it
+ * when they next wonder why the published document says less than the table does.
+ */
+function citedFile(verifiedAt: string): string {
+  return verifiedAt.replace(/:\d+$/, '')
+}
+
 /** Top-level resource segment, which is what a gateway routes on. */
 function resourceOf(e: Entry): string {
   const segs = publicPath(e).split('/').filter(Boolean)
@@ -191,7 +201,20 @@ function buildOpenApi(): unknown {
     item[e.method.toLowerCase()] = {
       operationId: e.key,
       summary: `${e.method} ${publicPath(e)}`,
-      description: `Owned by \`${e.service}\`. Verified against \`${e.verifiedAt}\`.`,
+      // The FILE, never the line — `verifiedAt` carries `path/to/file.ts:123` and the position is
+      // dropped here on the way out. Two reasons, and they pull the same way:
+      //
+      //   * `refactor: cite the file, never the line` removed the line numbers from every
+      //     description string in `openapi.json` on the owner's instruction. That commit edited
+      //     the derived artefact and not this generator, so `--check` has reported the file stale
+      //     ever since and `pnpm test` has been red on main. This is the missing half.
+      //   * A line number here names a position inside a service repository this one does not
+      //     own, published in a document a stranger reads. It goes stale silently on any edit
+      //     above it, and then fails a build that has nothing to do with it.
+      //
+      // The line survives in `routes.ts`, which is internal and is repointed by hand when it
+      // drifts. What leaves the repository is the file.
+      description: `Owned by \`${e.service}\`. Verified against \`${citedFile(e.verifiedAt)}\`.`,
       tags: [e.service],
       ...(parameters.length ? { parameters } : {}),
       security,
@@ -209,7 +232,7 @@ function buildOpenApi(): unknown {
       version: '0.1.0',
       description:
         'Generated from the verified route table in @cloudsforge/sdk. Every operation cites the ' +
-        'line of the owning service that registers it. Paths are as the GATEWAY serves them: ' +
+        'file of the owning service that registers it. Paths are as the GATEWAY serves them: ' +
         'uniformly versioned under /v1, which four of the eight services do not do themselves.',
       license: { name: 'MIT' },
     },

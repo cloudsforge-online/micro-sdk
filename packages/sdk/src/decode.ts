@@ -145,19 +145,49 @@ export function decodeOffer(raw: Raw): Offer {
 
 /* ------------------------------------------------------------------ mint */
 
+/**
+ * ══════════════════════════════════════════════════════════════════════════════════════════════
+ * `priceShards` is decoded NOWHERE, because mint sends it nowhere.
+ *
+ * Both decoders below used to read `priceShards` with `toAmount` — the STRICT one, which throws
+ * `UsageError` on `undefined` rather than returning null. mint removed the field from the
+ * catalogue body and from `toWire` when SHARD was retired on 2026-08-04, and the comment on the
+ * catalogue handler in `mint/src/server.ts` says it was removed rather than renamed on purpose:
+ * "A removed field is a 'undefined' a client can notice; a silently re-based one is not."
+ *
+ * The client did not notice. `toAmount(undefined)` throws, so `decodeCatalogue` threw against the
+ * DEPLOYED service and `cf mint catalogue` was broken in production from the day mint shipped the
+ * removal — see micro-org#227 §1. Nothing went red, because the two repositories' suites were both
+ * green and disagreed with each other: `mint/src/server.test.ts` asserts `priceShards` is
+ * `undefined` on the catalogue and on a token, while this file's fixtures were written by the
+ * decoder's own author and supplied the field the decoder demanded. A fixture that is not the
+ * server's real output grades nothing.
+ *
+ * So the field is GONE here and in `types.ts`, not made optional. A `bigint | undefined` that is
+ * `undefined` on every response the estate can produce is a hole with a plausible name over it:
+ * it survives a typecheck, autocompletes, and reads as a price. The replacement is
+ * `priceUsdCents`, which mint actually sends — strict on the catalogue, where the handler builds
+ * it from configuration and it is always present, and tolerant on a token, where the column is
+ * null on a row a pre-migration-6 build wrote.
+ *
+ * The regression test is `the catalogue decodes the body the deployed mint actually returns` in
+ * `decode.test.ts`; its fixture is the handler's own body, keys and all, and it is the citation
+ * that keeps this honest.
+ * ══════════════════════════════════════════════════════════════════════════════════════════════
+ */
 export function decodeToken(raw: Raw): Token {
   return {
     ...(raw as unknown as Token),
     supply: toAmount(raw['supply'], 'supply'),
     cap: toAmountOrNull(raw['cap'], 'cap'),
-    priceShards: toAmount(raw['priceShards'], 'priceShards'),
+    priceUsdCents: toAmountOrNull(raw['priceUsdCents'], 'priceUsdCents'),
   }
 }
 
 export function decodeCatalogue(raw: Raw): MintCatalogue {
   return {
     ...(raw as unknown as MintCatalogue),
-    priceShards: toAmount(raw['priceShards'], 'priceShards'),
+    priceUsdCents: toAmount(raw['priceUsdCents'], 'priceUsdCents'),
   }
 }
 

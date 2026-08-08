@@ -78,7 +78,7 @@ test('a zero or negative amount is refused before any request is made', async ()
 })
 
 test('a token supply of 10^24 is sent as a string', async () => {
-  const { cf, calls } = client(() => ok({ token: { supply: '1', cap: null, priceShards: '0' } }))
+  const { cf, calls } = client(() => ok({ token: { supply: '1', cap: null, priceUsdCents: '2500' } }))
   await cf.mint.createToken({
     chain: 'ember',
     name: 'Test',

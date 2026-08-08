@@ -314,7 +314,13 @@ async function dispatch(parsed: Parsed, io: Io): Promise<ExitCode> {
         json
           ? toJson(catalogue)
           : `${details([
-              ['price (shards)', catalogue.priceShards.toString()],
+              // The label states the unit the SERVER sends, and the value is that number
+              // unconverted. It read 'price (shards)' until mint retired SHARD and re-based the
+              // field to US cents — at which point the figure printed was cents and the word
+              // beside it named an asset the estate no longer issues. Converting to dollars here
+              // would put arithmetic between the operator and the quote; the cents are what the
+              // catalogue said, so the cents are what is printed.
+              ['price (USD cents)', catalogue.priceUsdCents.toString()],
               ['network', catalogue.network],
             ])}\n\n${table([...catalogue.variants], [
               { heading: 'variant', of: (row) => row.variant },

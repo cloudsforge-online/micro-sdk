@@ -256,11 +256,11 @@ function permissiveBody(): unknown {
     replayed: false,
     pool: { yes: '0', no: '0', total: '0' },
     position: { yes: '0', no: '0' },
-    priceShards: '0',
+    priceUsdCents: '0',
     listing: { quantity: '1', price: null },
     order: { quantity: '1', amount: '0', feeAmount: '0', royaltyAmount: '0', sellerProceeds: '0', royalties: [] },
     offer: { amount: '0' },
-    token: { supply: '0', cap: null, priceShards: '0' },
+    token: { supply: '0', cap: null, priceUsdCents: '0' },
     withdrawal: { amount: '0', fee: '0', net: '0' },
     record: { amount: null },
   }

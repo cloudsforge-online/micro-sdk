@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
   decodeActivityRecord,
+  decodeCatalogue,
   decodeListing,
   decodeObservedWallet,
   decodeOrder,
@@ -49,7 +50,7 @@ test('every money field on an order becomes a bigint', () => {
 test('a null price stays null and does not become zero', () => {
   // An auction listing has no fixed price. Zero would render as free.
   assert.equal(decodeListing({ id: 'l1', quantity: '1', price: null }).price, null)
-  assert.equal(decodeToken({ supply: '1', cap: null, priceShards: '0' }).cap, null)
+  assert.equal(decodeToken({ supply: '1', cap: null, priceUsdCents: '0' }).cap, null)
   assert.equal(decodeActivityRecord({ id: 'a1', amount: null }).amount, null)
 })
 
@@ -115,7 +116,7 @@ test('a supply of 10^24 survives, which is the reason none of this is a number',
   const token = decodeToken({
     supply: '1000000000000000000000000',
     cap: '2000000000000000000000000',
-    priceShards: '500',
+    priceUsdCents: '2500',
   })
   assert.equal(token.supply, 10n ** 24n)
   assert.equal(token.cap, 2n * 10n ** 24n)
@@ -125,5 +126,101 @@ test('a supply of 10^24 survives, which is the reason none of this is a number',
 test('a money field that arrives as an unsafe JSON number fails loudly', () => {
   // If a service ever regressed to sending a number, the value in the payload is already not the
   // one it meant. Failing here is the only honest answer.
-  assert.throws(() => decodeToken({ supply: 1e30, cap: null, priceShards: '0' }), UsageError)
+  assert.throws(() => decodeToken({ supply: 1e30, cap: null, priceUsdCents: '0' }), UsageError)
+})
+
+/* ═══════════════════════════════ mint, after SHARD was retired ═══════════════════════════════ */
+
+/**
+ * The catalogue body as the DEPLOYED mint service builds it.
+ *
+ * SOURCE: the `GET /v1/catalogue` handler in `mint/src/server.ts` — the object literal whose first
+ * property carries the comment beginning "A decimal STRING, like every amount this service
+ * serves" — together with the `VARIANTS` table in `mint/src/catalogue.ts`, which is where
+ * `variantFor` gets `contract`, `features` and `cap` from. The handler maps `fixed`, `mintable`
+ * and `foundry` in that order and copies exactly those four keys off each spec, so `bytecode` is
+ * absent here because it is absent there.
+ *
+ * The citation names the FILE and the route rather than a line number, deliberately: this
+ * repository swept line numbers out of its comments (`refactor: cite the file, never the line`)
+ * because a position in a file another repository owns goes stale silently and then fails a build
+ * that has nothing to do with it. A route and a quoted sentence survive an edit above them.
+ *
+ * The point of writing it out rather than reaching for the shape the decoder wanted: this
+ * decoder's fixtures used to be written by the decoder's own author and supplied `priceShards`,
+ * so they were green for every possible implementation, including the one that threw against the
+ * real service. `priceShards` IS NOT PRESENT BELOW, and must never be added — mint stopped sending
+ * it on 2026-08-04 and `mint/src/server.test.ts` asserts it is `undefined` on this exact response.
+ */
+const MINT_CATALOGUE_BODY = Object.freeze({
+  priceUsdCents: '2500',
+  settlementAsset: 'EMBER',
+  network: 'mainnet',
+  variants: [
+    { variant: 'fixed', contract: 'FixedSupplyToken', features: [], cap: 'forbidden' },
+    { variant: 'mintable', contract: 'MintableToken', features: ['mintable', 'burnable'], cap: 'forbidden' },
+    {
+      variant: 'foundry',
+      contract: 'FoundryToken',
+      features: ['mintable', 'burnable', 'pausable'],
+      cap: 'required',
+    },
+  ],
+})
+
+test('the catalogue decodes the body the deployed mint actually returns', () => {
+  // The regression. `decodeCatalogue` read `priceShards` with the STRICT `toAmount`, which throws
+  // on `undefined`, so this call raised `UsageError` against every live response mint served after
+  // it removed the field — and `cf mint catalogue` was broken in production the whole time.
+  const catalogue = decodeCatalogue(MINT_CATALOGUE_BODY)
+
+  assert.equal(catalogue.priceUsdCents, 2_500n)
+  assert.equal(typeof catalogue.priceUsdCents, 'bigint')
+  assert.equal(catalogue.network, 'mainnet')
+  assert.equal(catalogue.variants.length, MINT_CATALOGUE_BODY.variants.length)
+  assert.equal(catalogue.variants[2]?.contract, 'FoundryToken')
+
+  // The retired field must not reappear, under any value. `undefined` would be no better than a
+  // number: a key that exists reads as a price nobody is quoting.
+  assert.equal('priceShards' in catalogue, false)
+
+  // `settlementAsset` is not on `MintCatalogue`, and reaches a caller anyway. That is this SDK's
+  // promise about additive fields, and it is what makes removing a field from the type safe.
+  assert.equal((catalogue as unknown as Record<string, unknown>)['settlementAsset'], 'EMBER')
+})
+
+test('a catalogue with no price at all is still refused, loudly and by name', () => {
+  // Dropping `priceShards` must not have loosened the decoder into accepting a priceless
+  // catalogue. If mint ever stops sending `priceUsdCents` too, that has to fail here rather than
+  // print an empty price — and the message has to name the field, or the next person debugging it
+  // learns only that something was missing.
+  assert.throws(
+    () => decodeCatalogue({ settlementAsset: 'EMBER', network: 'mainnet', variants: [] }),
+    (err: unknown) => err instanceof UsageError && /priceUsdCents/.test(err.message),
+  )
+})
+
+test('a token from before migration 6 decodes with a null price, not a zero one', () => {
+  // `toWire` in `mint/src/server.ts` sends `token.priceUsdCents?.toString() ?? null`: the column
+  // is null on an order a pre-migration-6 build wrote, and those rows are still in the table. Zero
+  // would render a paid order as free, which is the reason this one field is tolerant while the
+  // catalogue's is strict.
+  const legacy = decodeToken({
+    id: 't1',
+    status: 'confirmed',
+    supply: '1000',
+    cap: null,
+    priceUsdCents: null,
+    chargeAssetCode: 'SHARD',
+    chargeAmount: '2500',
+  })
+  assert.equal(legacy.priceUsdCents, null)
+  assert.equal('priceShards' in legacy, false)
+  // The charge is reported in the asset the LEDGER records, retired or not. mint says so where it
+  // builds this field: printing EMBER over a charge the ledger holds as SHARD would be a false
+  // statement about money. The SDK passes it through untouched.
+  assert.equal((legacy as unknown as Record<string, unknown>)['chargeAssetCode'], 'SHARD')
+
+  const current = decodeToken({ id: 't2', supply: '1000', cap: null, priceUsdCents: '2500' })
+  assert.equal(current.priceUsdCents, 2_500n)
 })

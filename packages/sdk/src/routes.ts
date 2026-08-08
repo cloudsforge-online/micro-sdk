@@ -390,7 +390,7 @@ const TABLE = {
     service: 'mint',
     auth: 'none',
     idempotency: 'none',
-    verifiedAt: 'mint/src/server.ts:354',
+    verifiedAt: 'mint/src/server.ts:374',
   },
   'mint.createToken': {
     method: 'POST',

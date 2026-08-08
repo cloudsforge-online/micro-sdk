@@ -400,7 +400,21 @@ export interface Token {
   readonly cap: bigint | null
   readonly features: readonly string[]
   readonly status: string
-  readonly priceShards: bigint
+  /**
+   * What the customer was QUOTED, in US cents.
+   *
+   * This replaces `priceShards`, which mint REMOVED rather than renamed when SHARD was retired on
+   * 2026-08-04. Its comment on the catalogue handler in `mint/src/server.ts` gives the reason, and
+   * it is the reason this field is not simply the old one under a new name: the old field carried
+   * a real Shard figure until migration 6, so a client that kept reading `priceShards` after the
+   * re-base would have been reading cents and calling them Shards — a number that is right and a
+   * unit that is wrong, which is the harder of the two to notice.
+   *
+   * Nullable, and the null means something: `toWire` in `mint/src/server.ts` sends
+   * `token.priceUsdCents?.toString() ?? null`, and the column is null exactly on an order a
+   * pre-migration-6 build wrote. Substituting zero there would render a paid order as free.
+   */
+  readonly priceUsdCents: bigint | null
   readonly paidJournalEntryId: string | null
   readonly deployerAddress: string | null
   readonly contractAddress: string | null
@@ -422,8 +436,14 @@ export interface DeployAttempt {
   readonly at: string
 }
 
+/** `mint/src/server.ts`, `GET /v1/catalogue`. */
 export interface MintCatalogue {
-  readonly priceShards: bigint
+  /**
+   * The deploy price in US cents. Required and non-nullable, because the catalogue handler builds
+   * it from configuration (`deps.priceUsdCents.toString()`) and cannot serve a row that lacks it —
+   * unlike `Token.priceUsdCents`, which reads a nullable column.
+   */
+  readonly priceUsdCents: bigint
   readonly network: Network
   readonly variants: readonly {
     readonly variant: string
