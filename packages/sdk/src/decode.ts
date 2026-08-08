@@ -173,6 +173,31 @@ export function decodeOffer(raw: Raw): Offer {
  * The regression test is `the catalogue decodes the body the deployed mint actually returns` in
  * `decode.test.ts`; its fixture is the handler's own body, keys and all, and it is the citation
  * that keeps this honest.
+ *
+ * ── THIS IS A BREAKING CHANGE, AND THE GATE IS RIGHT TO SAY SO ─────────────────────────────────
+ *
+ * AD-02 says a contract package evolves additively, and the estate's compatibility checker
+ * enforces it on this package's exported type surface. It reports both removals, and it is not
+ * wrong to: `Token.priceShards` and `MintCatalogue.priceShards` are gone from a published type.
+ *
+ * The three ways to keep it were all worse, and each was rejected for a stated reason:
+ *
+ *   * KEEP IT AND SYNTHESISE A VALUE. One Shard is exactly one cent — migration 6 in
+ *     `mint/src/migrations.ts` back-fills cents from Shards and calls the back-fill "the identity,
+ *     not a conversion" — so `priceShards` could be filled from `priceUsdCents` with no
+ *     arithmetic at all. That is the whole problem with it: it would put a retired unit's name on
+ *     a price no customer was ever quoted in that unit, in a client, after the service deliberately
+ *     stopped doing exactly that. It is the "silently re-based" field mint's comment refuses.
+ *   * KEEP IT AND STOP FILLING IT. A `bigint` that is `undefined` at runtime type-checks,
+ *     autocompletes and reads as a price. That is a hole with a plausible name over it, and it is
+ *     the harm the checker's own message names: "a consumer reading it gets undefined at runtime".
+ *   * MAKE IT OPTIONAL. The same hole, and the checker refuses it too — a guaranteed field on a
+ *     returned type becoming optional is a withdrawn guarantee.
+ *
+ * What makes the removal safe rather than merely correct is that there is no working consumer to
+ * break: every path that produces a `Token` or a `MintCatalogue` throws today, and nothing in the
+ * estate depends on `@cloudsforge/sdk` except its own CLI. So this takes the remedy the checker
+ * asks for — a version bump, `0.2.0` → `0.3.0`, with the note the README's stability section owes.
  * ══════════════════════════════════════════════════════════════════════════════════════════════
  */
 export function decodeToken(raw: Raw): Token {

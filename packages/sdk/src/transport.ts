@@ -122,7 +122,7 @@ export interface CallOptions {
  * `routes.ts` — provenance that `as const` swept into the type by accident. The declaration was
  * wrong, not the checker.
  */
-export const SDK_VERSION: string = '0.2.0'
+export const SDK_VERSION: string = '0.3.0'
 
 export class Transport {
   readonly #baseUrl: string
