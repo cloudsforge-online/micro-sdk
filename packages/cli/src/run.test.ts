@@ -290,3 +290,37 @@ test('a market is never printed without its as-of and its staleness', async () =
 test('an empty result set says so rather than printing nothing at all', () => {
   assert.equal(table([], [{ heading: 'id', of: () => '' }]), '(none)')
 })
+
+test('the catalogue renders the body the deployed mint returns, in the unit mint quotes', async () => {
+  // The end of micro-org#227 §1, exercised through the command a person actually types.
+  //
+  // The body below is the `GET /v1/catalogue` handler's own object in `mint/src/server.ts`, plus
+  // the `VARIANTS` table in `mint/src/catalogue.ts` that `variantFor` reads. It carries no
+  // `priceShards`: mint removed that field when SHARD was retired on 2026-08-04 and
+  // `mint/src/server.test.ts` asserts it is `undefined` here. Cited by file and route rather than
+  // by line — see the note on the same fixture in the SDK's `decode.test.ts`.
+  //
+  // Against this body `cf mint catalogue` used to exit non-zero: the SDK decoded `priceShards`
+  // with the strict `toAmount`, which throws `UsageError` on a missing field. Two things are
+  // asserted, because either one alone would have passed while the command was wrong — an exit
+  // code (the command runs at all) and the label (the number is named in the unit it is in).
+  const h = harness(() => ({
+    status: 200,
+    body: {
+      priceUsdCents: '2500',
+      settlementAsset: 'EMBER',
+      network: 'mainnet',
+      variants: [
+        { variant: 'fixed', contract: 'FixedSupplyToken', features: [], cap: 'forbidden' },
+        { variant: 'foundry', contract: 'FoundryToken', features: ['mintable', 'burnable', 'pausable'], cap: 'required' },
+      ],
+    },
+  }))
+  assert.equal(await run(['catalogue'], h.io), EXIT.OK)
+  const printed = h.stdout.join('\n')
+  assert.match(printed, /price \(USD cents\)\s+2500/)
+  assert.match(printed, /FoundryToken/)
+  // No retired asset anywhere on the screen. The old label said "shards" over a cents figure,
+  // which is the failure this whole issue is about: a right number under a wrong unit.
+  assert.doesNotMatch(printed, /shard/i)
+})

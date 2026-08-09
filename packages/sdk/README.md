@@ -178,8 +178,10 @@ public marketplace reads is what once made every listing return 403 to a signed-
 
 ## What is stable
 
-Version `0.1.0`. `0.x` is the honest range while the public API itself is unreleased: `1.0.0` would
-promise stability nothing has earned yet.
+`0.x`, and the exact version is `SDK_VERSION` — read it from the package rather than from here.
+This line said `0.1.0` through two releases, which is what a version typed into prose does. `0.x`
+is the honest range while the public API itself is unreleased: `1.0.0` would promise stability
+nothing has earned yet.
 
 Within `0.x`, treated as **stable** — a change is breaking, gets a minor bump and a note:
 
@@ -201,6 +203,27 @@ Removing or narrowing an export from the entry point is a breaking change, and C
 did not make one: the estate's contract-compatibility checker diffs the exported **type surface**
 against the base ref and fails on a removed field, a narrowed type or a renamed key, and
 `index.test.ts` pins the exported **value** surface as a list that has to be edited deliberately.
+
+### Breaking changes, with the note each one owes you
+
+**`Token.priceShards` and `MintCatalogue.priceShards` are gone. Read `priceUsdCents`.**
+
+micro-mint removed the field from its catalogue body and its token wire when SHARD was retired on
+2026-08-04, and this client went on decoding it with the strict decoder — so `mint.catalogue()`
+and every method returning a `Token` threw `UsageError` against the live service rather than
+returning anything at all. No consumer of either type was working, which is the whole reason the
+field could go: there was nothing to break.
+
+It is not renamed and it is not re-derived, though the arithmetic would have been trivial — one
+Shard is exactly one cent, so the two integers are equal (`mint/src/migrations.ts`, migration 6,
+`retire_shard_pricing`: "this is the identity, not a conversion"). Synthesising it here would put
+the retired unit back on a price no one was ever quoted in it, which is precisely what mint
+deleted the field to prevent. `priceUsdCents` says what mint says, in the unit mint says it in:
+required on the catalogue, and `bigint | null` on a token, where null means an order written
+before that migration and never zero.
+
+The contract-compatibility checker reports this as breaking, correctly and by design. It is a
+minor bump, and this is the note.
 
 ---
 

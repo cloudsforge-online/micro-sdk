@@ -1,6 +1,6 @@
 {
   "name": "@cloudsforge/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typed client for the CloudsForge public API: wallets, portfolio, activity, pricing, mint, market, foresight and worlds.",
   "license": "MIT",
   "type": "module",
