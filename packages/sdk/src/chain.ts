@@ -41,7 +41,7 @@ export type ChainFamily = 'evm' | 'ember' | 'solana' | 'bitcoin' | 'xrp'
 
 export type Network = 'mainnet' | 'testnet'
 
-export type AssetCode = 'EMBER' | 'BTC' | 'ETH' | 'LTC' | 'SOL' | 'XRP' | 'SHARD'
+export type AssetCode = 'EMBER' | 'BTC' | 'ETH' | 'ETC' | 'LTC' | 'DOGE' | 'SOL' | 'XRP' | 'SHARD'
 
 export interface AssetSpec {
   readonly asset: AssetCode
@@ -63,6 +63,17 @@ export interface AssetSpec {
 export const ASSETS: Readonly<Record<AssetCode, AssetSpec>> = Object.freeze({
   EMBER: Object.freeze({ asset: 'EMBER', family: 'ember', name: 'Hearth', decimals: 18, confirmations: 60 }),
   ETH: Object.freeze({ asset: 'ETH', family: 'evm', name: 'Ethereum', decimals: 18, confirmations: 12 }),
+  // SEVEN THOUSAND FIVE HUNDRED, AND IT IS NOT A TYPO. Ethereum Classic shares Ethereum's family,
+  // its JSON-RPC and its eighteen decimals, and shares none of its security: it is a
+  // minority-hashrate proof-of-work chain that has been 51%-attacked repeatedly, with
+  // reorganisations of ~100 blocks in 2019 and of ~3,693, ~4,236 and ~7,000 blocks across August
+  // 2020. Upstream measured a mean block time of 13.70s on 2026-08-08, which makes Ethereum's
+  // twelve confirmations 2.7 minutes here — a depth all four of those attacks reached past. The
+  // platform credits no shallower than the deepest reorganisation the chain has actually produced,
+  // so 7,500 blocks is ~28 hours. Budget a deposit flow for a day and a bit rather than reporting
+  // one as stuck, and do not carry ETH's twelve across because everything else about the two
+  // chains matches — that is precisely the step this number exists to refuse.
+  ETC: Object.freeze({ asset: 'ETC', family: 'evm', name: 'Ethereum Classic', decimals: 18, confirmations: 7500 }),
   // SIX, NOT THREE. This said 3 until 2026-08-05, while the platform has credited at 6 since
   // native deposits were built — so every integration built on this SDK was told a Bitcoin deposit
   // was final roughly half an hour before the platform agreed. `tools/drift.ts` was reporting it
@@ -72,6 +83,14 @@ export const ASSETS: Readonly<Record<AssetCode, AssetSpec>> = Object.freeze({
   // fraction of Bitcoin's hashrate, so twelve confirmations is ~30 minutes rather than six being
   // fifteen. Copying the number because the family matches is the mistake upstream warns about.
   LTC: Object.freeze({ asset: 'LTC', family: 'bitcoin', name: 'Litecoin', decimals: 8, confirmations: 12 }),
+  // Dogecoin. Litecoin's family and Litecoin's WALL CLOCK, and deliberately not Litecoin's number:
+  // upstream measured a mean block time of 63.4s on 2026-08-08, so thirty confirmations is ~31.7
+  // minutes — what LTC's twelve buys at ~2.5-minute blocks. Carrying the 12 across because the
+  // family matches would credit after 12.7 minutes, under half the wall clock the platform insists
+  // on next door. And one fact that is not a depth but catches integrations anyway: Dogecoin has
+  // no segwit and no bech32, so its addresses are base58 and begin with `D`. A destination field
+  // that validates by pattern-matching `bc1` or `ltc1` rejects every valid one.
+  DOGE: Object.freeze({ asset: 'DOGE', family: 'bitcoin', name: 'Dogecoin', decimals: 8, confirmations: 30 }),
   SOL: Object.freeze({ asset: 'SOL', family: 'solana', name: 'Solana', decimals: 9, confirmations: 32 }),
   XRP: Object.freeze({ asset: 'XRP', family: 'xrp', name: 'XRP Ledger', decimals: 6, confirmations: 1 }),
   // Shards never touch a chain. Present so the record is total and a lookup cannot be undefined.
@@ -83,7 +102,9 @@ export const ON_CHAIN_ASSETS: readonly AssetCode[] = Object.freeze([
   'EMBER',
   'BTC',
   'ETH',
+  'ETC',
   'LTC',
+  'DOGE',
   'SOL',
   'XRP',
 ])
@@ -92,7 +113,9 @@ export const ASSET_CODES: readonly AssetCode[] = Object.freeze([
   'EMBER',
   'BTC',
   'ETH',
+  'ETC',
   'LTC',
+  'DOGE',
   'SOL',
   'XRP',
   'SHARD',

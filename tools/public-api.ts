@@ -125,10 +125,10 @@ export function publicPath(e: Entry): string {
 }
 
 /**
- * A `verifiedAt` citation with its line number dropped: `mint/src/server.ts:374` → `mint/src/server.ts`.
+ * A `verifiedAt` citation with its line dropped: `mint/src/server.ts:374` → `mint/src/server.ts`.
  *
- * One function rather than an inline `.replace`, so the rule is somewhere a reader can find it
- * when they next wonder why the published document says less than the table does.
+ * A named function rather than an inline `.replace`, so the rule has somewhere to live when the
+ * next reader wonders why the published document says less than the table it came from.
  */
 function citedFile(verifiedAt: string): string {
   return verifiedAt.replace(/:\d+$/, '')
@@ -201,19 +201,19 @@ function buildOpenApi(): unknown {
     item[e.method.toLowerCase()] = {
       operationId: e.key,
       summary: `${e.method} ${publicPath(e)}`,
-      // The FILE, never the line — `verifiedAt` carries `path/to/file.ts:123` and the position is
-      // dropped here on the way out. Two reasons, and they pull the same way:
+      // THE FILE, NEVER THE LINE. `verifiedAt` carries `<service>/src/<file>.ts:<line>` and the
+      // position is dropped on the way out, for two reasons that pull the same way:
       //
-      //   * `refactor: cite the file, never the line` removed the line numbers from every
-      //     description string in `openapi.json` on the owner's instruction. That commit edited
-      //     the derived artefact and not this generator, so `--check` has reported the file stale
-      //     ever since and `pnpm test` has been red on main. This is the missing half.
-      //   * A line number here names a position inside a service repository this one does not
-      //     own, published in a document a stranger reads. It goes stale silently on any edit
-      //     above it, and then fails a build that has nothing to do with it.
+      //   * `refactor: cite the file, never the line` stripped the line numbers out of every
+      //     description in `openapi.json` by hand. It edited the derived artefact and left the
+      //     generator alone, so `--check` has called the document stale — and `pnpm test` has been
+      //     red on main — from that commit until this one. This is the half that was missing.
+      //   * A line published here names a position inside a service repository this one does not
+      //     own, in a document a stranger reads. It goes stale silently on any edit above it and
+      //     then fails a build that has nothing to do with the change that broke it.
       //
       // The line survives in `routes.ts`, which is internal and is repointed by hand when it
-      // drifts. What leaves the repository is the file.
+      // drifts. What leaves this repository is the file.
       description: `Owned by \`${e.service}\`. Verified against \`${citedFile(e.verifiedAt)}\`.`,
       tags: [e.service],
       ...(parameters.length ? { parameters } : {}),

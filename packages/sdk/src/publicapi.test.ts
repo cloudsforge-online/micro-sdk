@@ -138,19 +138,17 @@ test('a router that exists only in a comment does not count as routed', () => {
 
 test('every operation in the description cites the file that serves it', () => {
   // This asserted `:\d+` — a citation with a LINE — until `refactor: cite the file, never the
-  // line` stripped the line numbers out of openapi.json on the owner's instruction and left this
-  // test, and `--check`, disagreeing with the artefact. main has been red since.
+  // line` stripped the lines out of `openapi.json` by hand and left this test and the generator
+  // both disagreeing with the artefact. What the assertion protects has not moved: an operation
+  // must still carry a citation a reader can go and check, because a description nobody can
+  // re-check is a claim. Only the granularity moved, and it moved because a position inside a
+  // repository this one does not own goes stale in silence.
   //
-  // The requirement is unchanged in what it protects: an operation must still carry a citation a
-  // reader can go and check, because a description nobody can re-check is a claim. Only the
-  // granularity moved, and it moved because a position inside a repository this one does not own
-  // goes stale silently and then fails a build that has nothing to do with it.
-  //
-  // That the citation is the RIGHT file is not asserted here and does not need to be: the first
-  // test in this file runs `--check`, which regenerates every description from `routes.ts` and
-  // compares it to the committed document byte for byte. What is left for this test is the part
-  // `--check` cannot see, because it would compare a wrong rule against itself and agree — that
-  // the shape the generator emits is a citation at all, and that it is a file rather than a line.
+  // That the citation names the RIGHT file is not asserted here and does not need to be: the first
+  // test in this file runs `--check`, which rebuilds every description from `routes.ts` and
+  // compares it to the committed document byte for byte. What is left here is the part `--check`
+  // cannot see, because it would be comparing a wrong rule against itself and agreeing — that what
+  // the generator emits is a citation at all, and that it is a file rather than a line.
   const doc = JSON.parse(readFileSync(root('openapi.json'), 'utf8')) as {
     paths: Record<string, Record<string, { description?: string; operationId?: string }>>
   }
@@ -162,8 +160,7 @@ test('every operation in the description cites the file that serves it', () => {
       /Verified against `[a-z][a-z-]*\/src\/[a-z0-9.]+\.ts`/,
       `${op.operationId} has no citation — a description nobody can re-check is a claim`,
     )
-    // …and no line is published with it. The line survives in `routes.ts`, which is internal and
-    // is repointed by hand; what leaves the repository is the file.
+    // …and no line travels with it. The line lives on in `routes.ts`, which is internal.
     assert.doesNotMatch(op.description ?? '', /\.ts:\d+/)
   }
 })

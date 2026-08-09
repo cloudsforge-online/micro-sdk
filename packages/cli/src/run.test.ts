@@ -164,7 +164,12 @@ test('a missing positional is a usage error before any request', async () => {
 
 test('an unknown asset is refused locally rather than by a round trip', async () => {
   const h = harness()
-  assert.equal(await run(['rates', '--asset', 'DOGE'], h.io), EXIT.USAGE)
+  // `NOTACHAIN`, AND NOT A REAL TICKER. This said `DOGE`, and Dogecoin becoming an asset turned it
+  // into a test that asserts the CLI refuses something it now accepts. It failed loudly here only
+  // because the expectation is an exit code; the sibling assertion in `chain.test.ts` was one line
+  // away from passing while checking the opposite of the truth. A ticker the platform might one
+  // day support is a fixture with an expiry date on it, and more assets are queued behind these.
+  assert.equal(await run(['rates', '--asset', 'NOTACHAIN'], h.io), EXIT.USAGE)
   assert.equal(h.requests.length, 0)
 })
 
