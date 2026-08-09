@@ -136,7 +136,19 @@ test('a router that exists only in a comment does not count as routed', () => {
   assert.match(out, /\/v1\/rates is not routed/)
 })
 
-test('every operation in the description cites the line that serves it', () => {
+test('every operation in the description cites the file that serves it', () => {
+  // This asserted `:\d+` — a citation with a LINE — until `refactor: cite the file, never the
+  // line` stripped the lines out of `openapi.json` by hand and left this test and the generator
+  // both disagreeing with the artefact. What the assertion protects has not moved: an operation
+  // must still carry a citation a reader can go and check, because a description nobody can
+  // re-check is a claim. Only the granularity moved, and it moved because a position inside a
+  // repository this one does not own goes stale in silence.
+  //
+  // That the citation names the RIGHT file is not asserted here and does not need to be: the first
+  // test in this file runs `--check`, which rebuilds every description from `routes.ts` and
+  // compares it to the committed document byte for byte. What is left here is the part `--check`
+  // cannot see, because it would be comparing a wrong rule against itself and agreeing — that what
+  // the generator emits is a citation at all, and that it is a file rather than a line.
   const doc = JSON.parse(readFileSync(root('openapi.json'), 'utf8')) as {
     paths: Record<string, Record<string, { description?: string; operationId?: string }>>
   }
@@ -145,9 +157,11 @@ test('every operation in the description cites the line that serves it', () => {
   for (const op of ops) {
     assert.match(
       op.description ?? '',
-      /Verified against `[^`]+:\d+`/,
+      /Verified against `[a-z][a-z-]*\/src\/[a-z0-9.]+\.ts`/,
       `${op.operationId} has no citation — a description nobody can re-check is a claim`,
     )
+    // …and no line travels with it. The line lives on in `routes.ts`, which is internal.
+    assert.doesNotMatch(op.description ?? '', /\.ts:\d+/)
   }
 })
 

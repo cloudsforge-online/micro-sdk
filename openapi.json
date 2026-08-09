@@ -3,7 +3,7 @@
   "info": {
     "title": "CloudsForge public API",
     "version": "0.1.0",
-    "description": "Generated from the verified route table in @cloudsforge/sdk. Every operation cites the line of the owning service that registers it. Paths are as the GATEWAY serves them: uniformly versioned under /v1, which four of the eight services do not do themselves.",
+    "description": "Generated from the verified route table in @cloudsforge/sdk. Every operation cites the file of the owning service that registers it. Paths are as the GATEWAY serves them: uniformly versioned under /v1, which four of the eight services do not do themselves.",
     "license": {
       "name": "MIT"
     }
