@@ -80,8 +80,13 @@ Before it is flipped, all of these should be true:
    `api.<apex>` rather than the API being renamed away from it — `api.cloudsforge.online/v1/titles`
    answers `200` today, and `worlds-api.cloudsforge.online` has no public DNS record at all. So
    there is no rename pending and no deprecation cycle to pay for.
-4. The developer platform can issue a credential. Until it can, the only usable credential is one
-   an operator hands over by other means, and `clientCredentials` has no default token endpoint.
+4. ~~The developer platform can issue a credential.~~ **Met.** `micro-devplatform` is live at
+   `https://developers.cloudsforge.online` and mints API keys self-service, so a stranger can get a
+   working credential without an operator handing them one. `clientCredentials` still has no
+   default `tokenUrl`, and that is now a narrower gap than this gate assumed: the missing piece is
+   **identity's** token endpoint, not the platform — devplatform deliberately does not mint tokens,
+   because signing them would give the estate a second trusted issuer. `packages/sdk/README.md`
+   §Authentication has the reasoning. `apiKey()` is the path for a new integrator.
 5. Every CI job is green on `main`, including secret hygiene.
 
 Publishing to npm is a separate decision again, and neither package is published yet. `pnpm pack`

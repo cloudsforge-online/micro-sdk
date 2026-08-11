@@ -111,10 +111,30 @@ nothing and never reaches the platform as a 400 somebody has to reason about.
 callers, puts the secret in the form body (never a URL), and never echoes a token-endpoint body
 into an error — that body can contain your secret.
 
-**`tokenUrl` has no default, and that is deliberate.** The developer platform that will issue these
-credentials is not built yet. A default here would be a URL this SDK invented, and a made-up
-endpoint is worse than a required argument. When it ships, `tokenUrl` gains a default and nothing
-else about this changes.
+**`tokenUrl` has no default, and that is deliberate.** A default here would be a URL this SDK
+invented, and a made-up endpoint is worse than a required argument.
+
+**The reason has changed, though, and the new one is not "wait for the platform".** The developer
+platform ships — `micro-devplatform`, whose console is at `https://developers.cloudsforge.online`
+(and `https://developers-testnet.cloudsforge.online`), routed publicly for `/v1/apps`, `/v1/keys`,
+`/v1/oauth-clients`, `/v1/organisations`, `/v1/projects`, `/v1/scopes` and
+`/v1/webhook-endpoints`. **API keys are self-service today**: register there, mint one, and use
+`apiKey()` from the table above. Nothing about that path waits on anything.
+
+What is still missing is only the **client-credentials token endpoint**, and it is missing on
+purpose rather than by omission. Minting an access token means signing it with the key the estate's
+JWKS publishes, and that key is **identity's** — `runtime/packages/auth`'s verifier checks the
+issuer and fetches identity's JWKS, so a token signed by devplatform would verify nowhere. The two
+ways to make devplatform mint one are both worse than the gap: give it a signing key of its own and
+the estate has two omnipotent issuers where it had one, or hand it identity's private key, which is
+not a discussion. The seam that is correct — **devplatform owns the client registry and answers
+whether a `client_id`/`client_secret` pair is valid; identity owns the token endpoint and asks it**
+— is half built: `POST /internal/oauth/verify` exists and is refused from outside the estate.
+Identity's half does not.
+
+So `clientCredentials` remains for callers who already have a token endpoint, and **`apiKey()` is
+the path a new integrator should take.** When identity's endpoint lands, `tokenUrl` gains a default
+and nothing else about this changes.
 
 There is deliberately **no password grant** and no wrapper around the sign-in route. A third-party
 application must never collect a CloudsForge password.
@@ -136,7 +156,7 @@ Three options, and why two were rejected:
 
 | Option | Verdict |
 | --- | --- |
-| **Generate from the OpenAPI description** | The contract strategy names this as the eventual mechanism. **There is no committed OpenAPI description anywhere in the estate today** — checked, not assumed. Generating from it now would mean generating from nothing. |
+| **Generate from the OpenAPI description** | The contract strategy names this as the eventual mechanism. **When this was written there was no committed OpenAPI description anywhere in the estate** — checked, not assumed — so generating from it would have meant generating from nothing. That is no longer true: `sdk/openapi.json` is committed in this repository and carries 52 paths. It is *this package's* description rather than a description the services publish, so it cannot be the generator's input without becoming circular — but the sentence as written is now false in its own repository, and the decision below stands on the other two rows rather than on this one. |
 | **Vendor the contract packages wholesale** | They carry internal surface: service-token claims, actor vocabularies, operator shapes. Publishing them breaks the one rule this repository exists to hold. |
 | **Duplicate the narrow set of values actually needed, and check the copy** | **Chosen.** |
 
@@ -240,8 +260,17 @@ to the documentation.
   estate-wide activity feed are all operator- or admin-gated. Absent, deliberately.
 - **Event intake.** The platform's event endpoints are HMAC-signed intakes for its own relay. They
   are not a place a third party posts.
-- **Webhooks, API-key management, quotas and usage.** These belong to the developer platform, which
-  does not exist yet. When it does, they arrive here additively.
+- **Webhooks, API-key management, quotas and usage.** These belong to the developer platform, and
+  the developer platform now exists — the console is `https://developers.cloudsforge.online`, and
+  `/v1/apps`, `/v1/keys`, `/v1/oauth-clients`, `/v1/organisations`, `/v1/projects`, `/v1/scopes`
+  and `/v1/webhook-endpoints` are routed on the public API host. They are still absent **from this
+  SDK**, which is a different statement and the only one this section is entitled to make: use the
+  console, or those routes directly. When they arrive here they arrive additively.
+- **Mining.** The estate runs a Stratum v1 pool — `https://pool.cloudsforge.online` — serving BTC
+  on TCP 3333 and LTC on 3334, with Dogecoin merge-mined as an AuxPoW auxiliary of Litecoin rather
+  than as a chain you connect to. A miner speaks Stratum to a TCP port, not HTTPS to this API, so
+  there is nothing here to add for the mining path itself. Pool reads — worker hashrate, share
+  history, payouts — are on the pool's own surface and are not exposed through `/v1`.
 - **Sign-in, registration, password and MFA.** They exist; they are not this SDK's to offer.
   `identity.me()` is the one identity call included, and it **requires a user token** — a machine
   credential gets 403 there, by design, and no route answers the same question for one.
