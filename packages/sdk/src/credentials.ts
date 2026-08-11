@@ -4,26 +4,38 @@
  * ## The seam, and why it is a seam rather than an implementation
  *
  * `docs/ecosystem/11-data-and-contract-strategy.md` says the public API is authenticated by "a
- * devplatform-issued key or OAuth client with scopes". `cloudsforge-devplatform` does not exist —
- * it is item DEV-01 in the backlog and the thing P11 is waiting on. So there is no token endpoint
- * to POST to, no key format to validate, and no scope vocabulary to enumerate.
+ * devplatform-issued key or OAuth client with scopes".
  *
- * A guess at any of those would be a method that 404s, which is rule 4. What this file ships
- * instead is the *shape* of the answer: a `Credential` is anything that can produce a bearer token
- * on demand, and the three implementations below are the three that can be written truthfully
- * today.
+ * **This block used to say `cloudsforge-devplatform` does not exist, and that it is item DEV-01
+ * waiting on P11. It shipped.** `micro-devplatform` runs, its console is at
+ * `https://developers.cloudsforge.online`, and the gateway forwards `/v1/apps`, `/v1/keys`,
+ * `/v1/oauth-clients`, `/v1/organisations`, `/v1/projects`, `/v1/scopes` and
+ * `/v1/webhook-endpoints` to it. **API keys are self-service.** The old sentence is left named
+ * rather than deleted because it is why the three implementations below have the shape they do.
  *
- *   - `apiKey(key)` — the key is the bearer token. This is what a devplatform key will be, because
- *     it is what every route in the estate already reads: `bearerFrom(headerOf(req,
- *     'authorization'))`, unchanged in `wallet`, `market`, `mint`, `worlds`, `foresight`,
- *     `activity` and `ledger`. Nothing about the format is asserted, because nothing is known.
- *   - `bearerToken(token)` — a token you obtained some other way. The honest option while
- *     devplatform is missing, and the one the CLI uses.
+ * What is still true is narrower, and it is the half that governs this file: **there is no token
+ * endpoint to POST to.** devplatform deliberately does not mint tokens — signing one means signing
+ * with the key the estate's JWKS publishes, which is identity's, so a devplatform-signed token
+ * verifies nowhere; and giving devplatform its own key would create a second omnipotent issuer.
+ * `devplatform/src/oauth.ts` sets out the seam: devplatform owns the client registry and answers
+ * whether a `client_id`/`client_secret` pair is valid, identity owns the token endpoint and asks
+ * it. `POST /internal/oauth/verify` is built; identity's half is not. So a default `tokenUrl` would
+ * still be a URL this SDK made up, which is rule 4.
+ *
+ * A `Credential` is anything that can produce a bearer token on demand, and the three
+ * implementations below are the three that can be written truthfully today.
+ *
+ *   - `apiKey(key)` — the key is the bearer token, and this is now the path a new integrator
+ *     should take: mint one in the console. It is what every route in the estate already reads:
+ *     `bearerFrom(headerOf(req, 'authorization'))`, unchanged in `wallet`, `market`, `mint`,
+ *     `worlds`, `foresight`, `activity` and `ledger`. Nothing about the format is asserted here,
+ *     because nothing about it needs to be: it is carried, not parsed.
+ *   - `bearerToken(token)` — a token you obtained some other way, and the one the CLI uses.
  *   - `clientCredentials({ tokenUrl, clientId, clientSecret })` — RFC 6749 §4.4, with the token
- *     endpoint supplied by the CALLER rather than baked in, precisely because the SDK does not
- *     know where it will live. It caches until expiry with a safety margin and refreshes once
- *     across concurrent callers. When devplatform ships, the only change here is a default for
- *     `tokenUrl`, which is an additive one.
+ *     endpoint supplied by the CALLER rather than baked in, because the endpoint that will serve
+ *     it is identity's and it is not built. It caches until expiry with a safety margin and
+ *     refreshes once across concurrent callers. When identity grows the endpoint, the only change
+ *     here is a default for `tokenUrl`, which is an additive one.
  *
  * ## What is deliberately absent
  *
@@ -76,8 +88,10 @@ export interface ClientCredentialsOptions {
   /**
    * The OAuth token endpoint.
    *
-   * REQUIRED, with no default, because `devplatform` does not exist yet and a default would be a
-   * URL this SDK made up. When it ships this gains a default and nothing else changes.
+   * REQUIRED, with no default. `devplatform` ships and issues the client, but it deliberately
+   * does not mint tokens — the token endpoint is identity's and is not built yet — so a default
+   * would still be a URL this SDK made up. See the header of this file. When identity grows the
+   * endpoint this gains a default and nothing else changes.
    */
   readonly tokenUrl: string
   readonly clientId: string

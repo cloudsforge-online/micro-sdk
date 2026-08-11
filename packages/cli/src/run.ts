@@ -521,7 +521,9 @@ function clientFrom(parsed: Parsed, io: Io): CloudsForge {
  *
  * An explicit flag beats the environment; a bearer token beats an API key; client credentials are
  * used only when the token endpoint is given, because there is no default for it — see the SDK's
- * `credentials.ts` for why (devplatform does not exist yet and a made-up URL is worse than none).
+ * `credentials.ts` for why. (devplatform ships and mints API keys; what it deliberately does not
+ * have is a token endpoint, because signing a token is identity's to do. A made-up URL is still
+ * worse than none. Set `CLOUDSFORGE_API_KEY` instead.)
  */
 export function credentialFrom(parsed: Parsed, io: Io): Credential {
   const tokenUrl = stringFlag(parsed, 'token-url') ?? io.env['CLOUDSFORGE_TOKEN_URL']
